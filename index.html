@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrot Corner Trainer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="brand">
+      <div class="brand__logo" aria-hidden="true">
+        <!-- simple carrot mark -->
+        <svg viewBox="0 0 64 64" width="34" height="34">
+          <g transform="rotate(8 32 32)">
+            <path d="M22 26 L42 26 L33 60 Q32 63 31 60 Z" fill="#F47C20"/>
+            <path d="M22 26 L42 26 L39 36 L25 36 Z" fill="#E2680F"/>
+            <path d="M32 26 C30 16 22 14 18 16 C24 18 26 22 26 26 Z" fill="#3FA34D"/>
+            <path d="M32 26 C34 14 42 12 47 15 C40 16 37 21 36 26 Z" fill="#4CAF50"/>
+          </g>
+        </svg>
+      </div>
+      <div class="brand__text">
+        <span class="brand__name">CARROT CORNER</span>
+        <span class="brand__tag">NLHE 6-max Cash · Trainer</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <!-- The visual "spot" -->
+      <section class="spot" aria-label="Poker spot">
+        <div class="table" id="table"></div>
+        <div class="spot__caption" id="caption"></div>
+      </section>
+
+      <!-- The quiz -->
+      <section class="quiz">
+        <div class="quiz__head">
+          <h1 class="quiz__title" id="title"></h1>
+          <p class="quiz__stakes" id="stakes"></p>
+        </div>
+
+        <div class="action" id="description"></div>
+
+        <p class="question" id="question"></p>
+
+        <div class="options" id="options"></div>
+
+        <div class="legend" id="legend" hidden>
+          <span class="legend__item"><i class="dot s-best"></i>Best</span>
+          <span class="legend__item"><i class="dot s-good"></i>Good</span>
+          <span class="legend__item"><i class="dot s-okay"></i>OK</span>
+          <span class="legend__item"><i class="dot s-mistake"></i>Mistake</span>
+          <span class="legend__item"><i class="dot s-horrible"></i>Blunder</span>
+          <span class="legend__item"><i class="gto-chip">GTO&nbsp;✅</i>In theory</span>
+        </div>
+
+        <div class="feedback" id="feedback" hidden>
+          <div class="feedback__author">
+            <span class="feedback__avatar">PC</span>
+            <span class="feedback__name" id="author"></span>
+            <span class="feedback__role">Coach feedback</span>
+          </div>
+          <p class="feedback__text" id="feedbackText"></p>
+          <button class="btn-reset" id="reset">Try again</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="spots.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
