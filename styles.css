@@ -540,7 +540,21 @@ body.midnight {
   border-radius: 14px; padding: 9px 14px;
   -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
 }
-.tbanner__brand { display: flex; align-items: center; gap: 10px; }
+.tbanner__brand { display: flex; align-items: center; gap: 10px; position: relative; }
+.tbanner__meta { font-size: 12px; font-weight: 700; color: #5fe0b0; margin-left: 2px; }
+.tbanner__menu {
+  position: absolute; top: calc(100% + 8px); left: 44px; z-index: 20; min-width: 240px;
+  background: #161d26; border: 1px solid rgba(255,255,255,.14); border-radius: 12px;
+  padding: 6px; box-shadow: 0 12px 34px rgba(0,0,0,.5);
+}
+.tmenu__item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;
+  background: none; border: none; cursor: pointer; font: inherit; color: #dbe6ef;
+  font-weight: 700; font-size: 13.5px; text-align: left; padding: 9px 11px; border-radius: 8px;
+}
+.tmenu__item:hover { background: rgba(255,255,255,.07); }
+.tmenu__item.active { color: #5fe0b0; }
+.tmenu__count { font-size: 11px; font-weight: 700; color: #8095a6; background: rgba(255,255,255,.06); border-radius: 999px; padding: 2px 8px; }
 .tbanner__logo { display: grid; place-items: center; width: 34px; height: 34px; background: #11161d; border-radius: 9px; }
 .tbanner__theme { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 800; font-size: 16px; color: #eaf2f8; background: none; border: none; cursor: pointer; }
 .tbanner__chev { color: #5fe0b0; font-size: 12px; }

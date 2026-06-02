@@ -151,6 +151,27 @@ function writeLocalDeck(deck) {
   localStorage.setItem(DECK_KEY, JSON.stringify(deck));
 }
 
+/* Scenario store (new model): localStorage 'ccScenarios' else scenarios.json */
+const SCEN_KEY = "ccScenarios";
+function readLocalScenarios() {
+  try {
+    const raw = localStorage.getItem(SCEN_KEY);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    return Array.isArray(d) ? d : null;
+  } catch { return null; }
+}
+function writeLocalScenarios(scenarios) {
+  localStorage.setItem(SCEN_KEY, JSON.stringify(scenarios));
+}
+async function fetchPublishedScenarios() {
+  try {
+    const res = await fetch("scenarios.json", { cache: "no-store" });
+    if (res.ok) { const d = await res.json(); if (Array.isArray(d)) return d; }
+  } catch { /* ignore */ }
+  return [];
+}
+
 async function fetchPublishedDeck() {
   try {
     const res = await fetch("spots.json", { cache: "no-store" });

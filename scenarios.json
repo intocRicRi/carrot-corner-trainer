@@ -1,0 +1,40 @@
+[
+  {
+    "id": "turn-probe",
+    "name": "Turn Probe Opportunity",
+    "stackDepth": 100,
+    "heroPos": "BB",
+    "raiserPos": "CO",
+    "openBB": 2.5,
+    "decisionStreet": "Turn",
+    "potBB": 5.5,
+    "actions": [
+      { "street": "Preflop", "action": "CO opens 2.5 BB · Hero calls" },
+      { "street": "Flop", "action": "checks through" },
+      { "street": "Turn", "action": "Hero to act", "live": true }
+    ],
+    "flop": { "suit": "any", "pair": "any", "conn": "any", "high": "any" },
+    "handConnection": "any",
+    "answers": [
+      { "code": "Check", "sub": "pot control" },
+      { "code": "B33", "sub": "≈ 1.8 BB" },
+      { "code": "B75", "sub": "≈ 4.1 BB" },
+      { "code": "B150", "sub": "≈ 8.3 BB" }
+    ],
+    "hands": [
+      {
+        "id": "seed-kj",
+        "hero": { "pos": "BB", "cards": ["Ks", "Js"] },
+        "board": ["8h", "Kd", "7h", "3s"],
+        "options": [
+          { "id": "A", "code": "Check", "label": "Check", "sub": "pot control", "score": "okay", "gto": true },
+          { "id": "B", "code": "B33", "label": "Bet 33% pot", "sub": "≈ 1.8 BB", "score": "okay", "gto": true },
+          { "id": "C", "code": "B75", "label": "Bet 75% pot", "sub": "≈ 4.1 BB", "score": "best", "gto": true },
+          { "id": "D", "code": "B150", "label": "Overbet 150% pot", "sub": "≈ 8.3 BB", "score": "best", "gto": true }
+        ],
+        "feedback": "In theory all options are okay with this hand. In practice, a small bet is likely to underperform due to the lack of raising by population in this node. Population is likely quite capped and condensed when they check the flop here. Hands like 8x, 7x and 99, TT, JJ, QQ and weak top pair will appear at a higher frequency than in theory. Therefore B75 and B150 are the best options. X/B33 will also underperform due to lack of aggression across turn and river from the pool.",
+        "author": "Pete Clarke"
+      }
+    ]
+  }
+]

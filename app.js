@@ -1,46 +1,47 @@
 /* ============================================================================
- * Carrot Corner Trainer — trainer logic (Midnight Glass layout).
- * Banner (theme + hand nav) · table · per-street recap · answer row (no keys,
- * outline+glow on reveal) · labelled legend · coach feedback. No scrolling.
+ * Carrot Corner Trainer — trainer logic (scenario model).
+ * Banner theme switcher = scenario list; hand nav moves within a scenario.
  * ==========================================================================*/
 
-let DECK = [];
-let index = 0;
+let SCENARIOS = [];
+let scen = null;     // active scenario
+let sIdx = 0;        // index within playable scenarios
+let hIdx = 0;        // hand index within the scenario
 
 const GRADE_LABELS = [
   ["best", "Best"], ["good", "Good"], ["okay", "OK"], ["mistake", "Mistake"], ["horrible", "Blunder"]
 ];
 
-async function loadDeck() {
-  // Use local drafts only if they match the current schema (have a street recap);
-  // this skips stale hands saved before the format change.
-  const local = readLocalDeck();
-  if (local) {
-    const valid = local.filter(s => Array.isArray(s.recap) && s.recap.length);
-    if (valid.length) return valid;
-  }
-  return await fetchPublishedDeck();
+async function loadScenarios() {
+  const local = readLocalScenarios();
+  if (local && local.length) return local;
+  return await fetchPublishedScenarios();
+}
+function playableScenarios() {
+  return SCENARIOS.filter(s => Array.isArray(s.hands) && s.hands.length);
+}
+function spotForTable(s, hand) {
+  return { potBB: s.potBB, openBB: s.openBB, hero: hand.hero, raiserPos: s.raiserPos, board: hand.board };
 }
 
-function renderRecap(spot) {
-  document.getElementById("recap").innerHTML = (spot.recap || []).map(s =>
-    `<div class="street${s.live ? " street--live" : ""}">` +
-      `<span class="street__name">${s.street}</span>` +
-      `<span class="street__act">${s.action}</span></div>`).join("");
+function renderRecap(s) {
+  document.getElementById("recap").innerHTML = (s.actions || []).map(a =>
+    `<div class="street${a.live ? " street--live" : ""}">` +
+      `<span class="street__name">${a.street}</span>` +
+      `<span class="street__act">${a.action}</span></div>`).join("");
 }
 
-function renderAnswers(spot) {
+function renderAnswers(hand) {
   const el = document.getElementById("answers");
   el.classList.remove("answered");
-  el.innerHTML = spot.options.map(o =>
+  el.innerHTML = hand.options.map(o =>
     `<button class="ans" data-id="${o.id}">` +
       `<span class="ans__gto">GTO&nbsp;✅</span>` +
       `<span class="ans__code">${o.code}</span>` +
       (o.sub ? `<span class="ans__sub">${o.sub}</span>` : "") +
       `<span class="ans__pick">✓</span>` +
     `</button>`).join("");
-  el.querySelectorAll(".ans").forEach(b =>
-    b.addEventListener("click", () => reveal(spot, b.dataset.id)));
+  el.querySelectorAll(".ans").forEach(b => b.addEventListener("click", () => reveal(b.dataset.id)));
 }
 
 function renderLegend() {
@@ -50,80 +51,111 @@ function renderLegend() {
     `<span class="leg"><i class="gto-chip">GTO&nbsp;✅</i>solver-approved</span>`;
 }
 
-function renderCoach(spot, revealed) {
+function renderCoach(hand, revealed) {
   const el = document.getElementById("coach");
+  const author = hand.author || "Coach";
   if (!revealed) {
     el.className = "tcoach tcoach--idle";
-    el.innerHTML = `<span class="tcoach__hint">Pick your play to see ${spot.author || "the coach"}’s feedback.</span>`;
+    el.innerHTML = `<span class="tcoach__hint">Pick your play to see ${author}’s feedback.</span>`;
     return;
   }
   el.className = "tcoach";
   el.innerHTML =
     `<div class="tcoach__head"><span class="feedback__avatar">PC</span>` +
-      `<span class="tcoach__name">${spot.author || "Coach"}</span>` +
+      `<span class="tcoach__name">${author}</span>` +
       `<span class="tcoach__role">Coach feedback</span></div>` +
-    `<p class="tcoach__text">${spot.feedback}</p>` +
+    `<p class="tcoach__text">${hand.feedback}</p>` +
     `<div class="tcoach__actions">` +
       `<button class="btn-ghost" id="retry">Try again</button>` +
       `<button class="btn-primary" id="next">Next hand →</button></div>`;
-  document.getElementById("retry").addEventListener("click", () => show(index));
-  document.getElementById("next").addEventListener("click", () => show(index + 1));
+  document.getElementById("retry").addEventListener("click", () => showHand(hIdx));
+  document.getElementById("next").addEventListener("click", () => showHand(hIdx + 1));
 }
 
-function reveal(spot, pickedId) {
+function reveal(pickedId) {
   const wrap = document.getElementById("answers");
   if (wrap.classList.contains("answered")) return;
   wrap.classList.add("answered");
-  spot.options.forEach(o => {
+  const hand = scen.hands[hIdx];
+  hand.options.forEach(o => {
     const b = wrap.querySelector(`.ans[data-id="${o.id}"]`);
     b.disabled = true;
     if (o.score) b.classList.add("score-" + o.score);
     if (o.id === pickedId) b.classList.add("picked");
     if (o.gto) b.querySelector(".ans__gto").classList.add("show");
   });
-  document.getElementById("legend").classList.add("show");   // reveal the colour key
-  renderCoach(spot, true);
+  document.getElementById("legend").classList.add("show");
+  renderCoach(hand, true);
 }
 
-function renderSpot(spot) {
-  renderTable(spot, document.getElementById("table"));
-  document.getElementById("themeName").textContent = spot.title || "Spot";
-  document.getElementById("handCount").textContent = `Hand ${index + 1} / ${DECK.length}`;
-  renderRecap(spot);
-  renderAnswers(spot);
+function renderSpot() {
+  const hand = scen.hands[hIdx];
+  renderTable(spotForTable(scen, hand), document.getElementById("table"));
+  document.getElementById("themeName").textContent = scen.name;
+  document.getElementById("themeMeta").textContent = `${scen.stackDepth} BB`;
+  document.getElementById("handCount").textContent = `Hand ${hIdx + 1} / ${scen.hands.length}`;
+  renderRecap(scen);
+  renderAnswers(hand);
   renderLegend();
-  document.getElementById("legend").classList.remove("show");   // space reserved; revealed on answer
-  renderCoach(spot, false);
+  document.getElementById("legend").classList.remove("show");
+  renderCoach(hand, false);
 }
 
-function show(i) {
-  index = (i + DECK.length) % DECK.length;
-  renderSpot(DECK[index]);
+function showHand(i) {
+  const n = scen.hands.length;
+  hIdx = (i + n) % n;
+  renderSpot();
+}
+
+function buildThemeMenu() {
+  const menu = document.getElementById("themeMenu");
+  const ps = playableScenarios();
+  menu.innerHTML = ps.map((s, i) =>
+    `<button class="tmenu__item${i === sIdx ? " active" : ""}" data-i="${i}">` +
+      `<span>${s.name}</span><span class="tmenu__count">${s.hands.length}</span></button>`).join("");
+  menu.querySelectorAll(".tmenu__item").forEach(b =>
+    b.addEventListener("click", () => { setScenario(+b.dataset.i); menu.hidden = true; }));
+}
+
+function setScenario(i) {
+  const ps = playableScenarios();
+  sIdx = (i + ps.length) % ps.length;
+  scen = ps[sIdx];
+  hIdx = 0;
+  renderSpot();
+  buildThemeMenu();
 }
 
 async function init() {
-  DECK = await loadDeck();
+  SCENARIOS = await loadScenarios();
+  const ps = playableScenarios();
 
   const empty = document.getElementById("empty");
   const layout = document.getElementById("layout");
-  if (!DECK.length) {
+  if (!ps.length) {
     empty.hidden = false;
     layout.hidden = true;
-    document.getElementById("handCount").textContent = "0 hands";
+    document.getElementById("handCount").textContent = "—";
     return;
   }
   empty.hidden = true;
   layout.hidden = false;
 
-  document.getElementById("prevBtn").addEventListener("click", () => show(index - 1));
-  document.getElementById("nextBtn").addEventListener("click", () => show(index + 1));
+  document.getElementById("prevBtn").addEventListener("click", () => showHand(hIdx - 1));
+  document.getElementById("nextBtn").addEventListener("click", () => showHand(hIdx + 1));
   document.getElementById("randomBtn").addEventListener("click", () => {
-    if (DECK.length < 2) return show(index);
-    let r; do { r = Math.floor(Math.random() * DECK.length); } while (r === index);
-    show(r);
+    const n = scen.hands.length;
+    if (n < 2) return showHand(hIdx);
+    let r; do { r = Math.floor(Math.random() * n); } while (r === hIdx);
+    showHand(r);
   });
 
-  show(0);
+  const themeBtn = document.getElementById("themeBtn");
+  const menu = document.getElementById("themeMenu");
+  themeBtn.addEventListener("click", e => { e.stopPropagation(); menu.hidden = !menu.hidden; });
+  document.addEventListener("click", () => { menu.hidden = true; });
+
+  setScenario(0);
 }
 
 document.addEventListener("DOMContentLoaded", init);
