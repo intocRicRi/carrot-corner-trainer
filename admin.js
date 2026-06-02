@@ -53,7 +53,7 @@ function generateSpot(forcedRaiser) {
     id: "spot-" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
     scenario: "turn-probe",
     title: "Turn Probe Opportunity",
-    stakes: "6-max",
+    stakes: "NLHE 6-max",
     effective: "Effective stacks ≈ 100 BB",
     potBB, openBB,
     hero: { pos: "BB", cards: heroCards },
