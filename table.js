@@ -42,29 +42,35 @@ function cardEl(card) {
   return el;
 }
 
-/* Fixed ring layout. Hero is always BB (bottom-centre) in this scenario. */
-const SEAT_SLOTS = [
-  { pos: "UTG", slot: "bottomLeft"  },
-  { pos: "HJ",  slot: "topLeft"     },
-  { pos: "CO",  slot: "topCenter"   },
-  { pos: "BTN", slot: "topRight"    },
-  { pos: "SB",  slot: "bottomRight" },
-  { pos: "BB",  slot: "hero"        }
-];
+/* Clockwise seating order, and the visual slots in the same order starting from
+ * Hero (always bottom-centre). Rotating by Hero's position seats everyone else
+ * in their correct relative places. */
+const CW_ORDER = ["BTN", "SB", "BB", "UTG", "HJ", "CO"];
+const VISUAL_SLOTS = ["hero", "bottomLeft", "topLeft", "topCenter", "topRight", "bottomRight"];
 
-/** Derive the six seats from a spot's raiser position. */
+/* Dealer-button anchor just inside the felt next to each slot's seat. */
+const DEALER_AT = {
+  hero:        { left: "63%", top: "73%" },
+  bottomLeft:  { left: "24%", top: "53%" },
+  topLeft:     { left: "19%", top: "32%" },
+  topCenter:   { left: "61%", top: "17%" },
+  topRight:    { left: "81%", top: "32%" },
+  bottomRight: { left: "76%", top: "53%" }
+};
+
+/** Derive the six seats — Hero always bottom-centre, everyone else in order. */
 function buildSeats(spot) {
   const openTxt = `opens ${spot.openBB ?? 2.5} BB`;
-  return SEAT_SLOTS.map(s => {
-    if (s.pos === "BB") {
-      return { slot: "hero", pos: "BB", name: "Hero", stack: "100 BB", state: "", note: "you" };
+  const heroPos = spot.hero.pos;
+  const found = CW_ORDER.indexOf(heroPos);
+  const base = found < 0 ? CW_ORDER.indexOf("BB") : found;
+  return VISUAL_SLOTS.map((slot, k) => {
+    const pos = CW_ORDER[(base + k) % CW_ORDER.length];
+    if (slot === "hero") {
+      return { slot: "hero", pos: heroPos, name: "Hero", stack: "100 BB", state: "", note: "you" };
     }
-    const isRaiser = s.pos === spot.raiserPos;
-    return {
-      slot: s.slot, pos: s.pos, name: "Villain", stack: "100 BB",
-      state: isRaiser ? "live" : "folded",
-      note: isRaiser ? openTxt : "folds"
-    };
+    const isRaiser = pos === spot.raiserPos;
+    return { slot, pos, name: "Villain", stack: "100 BB", state: isRaiser ? "live" : "folded", note: isRaiser ? openTxt : "folds" };
   });
 }
 
@@ -96,7 +102,10 @@ function villainSeatHTML(seat) {
  */
 function renderTable(spot, table) {
   table.classList.add("nt");
-  const villains = buildSeats(spot).filter(s => s.slot !== "hero").map(villainSeatHTML).join("");
+  const seats = buildSeats(spot);
+  const villains = seats.filter(s => s.slot !== "hero").map(villainSeatHTML).join("");
+  const btn = seats.find(s => s.pos === "BTN");
+  const dp = DEALER_AT[btn ? btn.slot : "topRight"] || DEALER_AT.topRight;
 
   table.innerHTML =
     `<div class="nt__frame">` +
@@ -105,7 +114,7 @@ function renderTable(spot, table) {
       `<div class="nt__board"></div>` +
       `<div class="nt__brand">${CARROT_SVG}<span>CARROT&nbsp;CORNER</span></div>` +
       villains +
-      `<div class="nt__dealer">D</div>` +
+      `<div class="nt__dealer" style="left:${dp.left};top:${dp.top}">D</div>` +
       `<div class="nt__hero">` +
         `<div class="nt__hero-cards"></div>` +
         `<div class="nt__hero-pod"><span class="nt__pinfo">` +
