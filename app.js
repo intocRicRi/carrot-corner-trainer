@@ -76,6 +76,7 @@ function reveal(spot, pickedId) {
     if (o.id === pickedId) b.classList.add("picked");
     if (o.gto) b.querySelector(".ans__gto").classList.add("show");
   });
+  document.getElementById("legend").hidden = false;   // reveal the colour key
   renderCoach(spot, true);
 }
 
@@ -86,6 +87,7 @@ function renderSpot(spot) {
   renderRecap(spot);
   renderAnswers(spot);
   renderLegend();
+  document.getElementById("legend").hidden = true;   // shown only after answering
   renderCoach(spot, false);
 }
 
