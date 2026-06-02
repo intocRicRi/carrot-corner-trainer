@@ -24,97 +24,17 @@
       </div>
       <div class="brand__text">
         <span class="brand__name">CARROT CORNER</span>
-        <span class="brand__tag">Coach Admin · build the deck</span>
+        <span class="brand__tag">Coach Admin · scenarios &amp; hands</span>
       </div>
       <div class="brand__right">
-        <span class="deck-count" id="deckCount">0 hands</span>
         <a class="admin-link" href="index.html">View trainer →</a>
       </div>
     </header>
 
-    <div class="admin">
-      <!-- LEFT: scenario + generate + preview -->
-      <section class="panel">
-        <h2 class="panel__title">1 · Scenario</h2>
-
-        <div class="scenario-card selected">
-          <div class="scenario-card__name">Turn Probe Opportunity</div>
-          <div class="scenario-card__rules">
-            Hero is BB · a single raiser (UTG/HJ/CO/BTN) opens · Hero calls, heads-up ·
-            flop checks through · Hero has a turn probe decision.
-          </div>
-        </div>
-
-        <h2 class="panel__title">2 · Parameters</h2>
-        <div class="params">
-          <label class="field">
-            <span>Raiser position</span>
-            <select id="raiserSel">
-              <option value="random">Random</option>
-              <option value="UTG">UTG</option>
-              <option value="HJ">Hijack</option>
-              <option value="CO">Cutoff</option>
-              <option value="BTN">Button</option>
-            </select>
-          </label>
-          <button class="btn-primary" id="genBtn">Generate hand</button>
-        </div>
-
-        <div class="preview" id="preview" hidden>
-          <div class="table table--sm" id="adminTable"></div>
-          <div class="preview__meta" id="previewMeta"></div>
-          <div class="preview__actions">
-            <button class="btn-ghost" id="skipBtn">↻ Skip — generate another</button>
-            <button class="btn-primary" id="useBtn">Use this hand ↓</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- RIGHT: grading -->
-      <section class="panel">
-        <h2 class="panel__title">3 · Grade &amp; feedback</h2>
-        <div class="grade-empty" id="gradeEmpty">
-          Generate a hand and click <b>“Use this hand”</b> to grade it.
-        </div>
-
-        <div class="grade" id="grade" hidden>
-          <p class="grade__hint">
-            Set a grade for each option (colour) and tick <b>GTO&nbsp;✅</b> for any option that
-            is theoretically sound. Then write the coach feedback.
-          </p>
-          <div class="grade__rows" id="gradeRows"></div>
-
-          <label class="field">
-            <span>Coach feedback (Pete Clarke)</span>
-            <textarea id="feedbackInput" rows="6" placeholder="Explain why the best plays are best in this node…"></textarea>
-          </label>
-
-          <div class="grade__save">
-            <span class="grade__error" id="gradeError" hidden></span>
-            <button class="btn-primary" id="saveBtn">Save hand</button>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- DECK manager -->
-    <section class="panel deckpanel">
-      <div class="deckpanel__head">
-        <h2 class="panel__title">Deck · <span id="deckCount2">0</span> hand(s)</h2>
-        <div class="deckpanel__actions">
-          <button class="btn-ghost" id="resetBtn" title="Reload the published deck, discarding local changes">Reset from published</button>
-          <button class="btn-primary" id="downloadBtn" title="Download a backup copy of the deck">⬇ Download backup</button>
-        </div>
-      </div>
-      <p class="deckpanel__note">
-        Saved hands are kept in this browser and show on your trainer instantly — no login needed for
-        testing. To put hands on the public URL for everyone, click <b>Download backup</b> and ask
-        Claude to publish them.
-      </p>
-      <ul class="decklist" id="deckList"></ul>
-    </section>
+    <div id="adminRoot"></div>
   </div>
 
+  <script src="poker.js"></script>
   <script src="table.js"></script>
   <script src="admin.js"></script>
 </body>
