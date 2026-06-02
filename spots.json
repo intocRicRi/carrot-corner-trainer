@@ -3,7 +3,7 @@
     "id": "seed-turn-probe-kj",
     "scenario": "turn-probe",
     "title": "Turn Probe Opportunity",
-    "stakes": "$0.25 NL · 6-max",
+    "stakes": "6-max",
     "effective": "Effective stacks ≈ 100 BB",
     "potBB": 5.5,
     "openBB": 2.5,
