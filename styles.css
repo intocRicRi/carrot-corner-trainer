@@ -431,6 +431,96 @@ html, body {
 [hidden] { display: none !important; }
 
 /* ============================================================================
+ * Poker table — N1 design.
+ * Hero hand seated on the bottom rail; felt shows pot -> board -> CARROT CORNER.
+ * Sized in container units (cqw = 1% of the table width) so it scales with the
+ * table itself, identically at any window size / browser.
+ * ==========================================================================*/
+.nt.table {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: none; box-shadow: none; overflow: visible; border-radius: 0;
+  container-type: inline-size;
+}
+.nt__frame {
+  position: absolute; inset: 0;
+  border-radius: var(--radius); overflow: hidden;
+  background:
+    linear-gradient(118deg, #b9530f 0%, #b9530f 46%, transparent 46%),
+    linear-gradient(305deg, #7d3a0b 0%, #7d3a0b 30%, transparent 30%),
+    linear-gradient(135deg, #e07c25 0%, #cf6a18 100%);
+  box-shadow: var(--shadow);
+}
+.nt__felt {
+  position: absolute; inset: 6% 6% 26% 6%;
+  border-radius: 50% / 50%;
+  background: radial-gradient(120% 130% at 50% 36%, #379a5f 0%, var(--felt) 42%, var(--felt-dark) 100%);
+  border: 9px solid #2b2f33;
+  box-shadow: inset 0 0 55px rgba(0,0,0,.45);
+}
+.nt__pot {
+  position: absolute; left: 50%; top: 17%; transform: translate(-50%, -50%);
+  background: #15181b; color: #e9eef0; font-weight: 600;
+  border: 1px solid rgba(255,255,255,.08); z-index: 3; white-space: nowrap;
+  font-size: 2.5cqw; padding: 0.9cqw 2.6cqw; border-radius: 99px;
+}
+.nt__pot b { color: #7fe0a0; font-weight: 700; }
+.nt__board {
+  position: absolute; left: 50%; top: 35%; transform: translate(-50%, -50%);
+  display: flex; gap: 1.1cqw; z-index: 2;
+}
+.nt__brand {
+  position: absolute; left: 0; right: 0; top: 48%;
+  display: flex; align-items: center; justify-content: center; gap: 1.4cqw;
+  color: rgba(255,255,255,.5); font-weight: 800; letter-spacing: .18em;
+  font-size: 3.9cqw; pointer-events: none; z-index: 1;
+}
+.nt__brand svg { width: 3.6cqw; height: 3.6cqw; flex: 0 0 auto; }
+.nt__seat { position: absolute; transform: translate(-50%, -50%); z-index: 2; }
+.nt__seat.topCenter   { left: 50%; top: 4%; }
+.nt__seat.topLeft     { left: 8%;  top: 22%; }
+.nt__seat.topRight    { left: 92%; top: 22%; }
+.nt__seat.bottomLeft  { left: 14%; top: 55%; }
+.nt__seat.bottomRight { left: 86%; top: 55%; }
+.nt__pod {
+  display: inline-flex; align-items: center; gap: 1.3cqw;
+  background: linear-gradient(#2d3237, #20242a);
+  border: 1px solid rgba(255,255,255,.08); border-radius: 1.6cqw;
+  padding: 0.9cqw 1.8cqw; box-shadow: 0 4px 10px rgba(0,0,0,.3); white-space: nowrap;
+}
+.nt__pinfo { display: flex; flex-direction: column; line-height: 1.12; text-align: left; }
+.nt__pname  { font-size: 2.05cqw; font-weight: 700; color: #dfe4e8; }
+.nt__ppos   { font-size: 1.7cqw; font-weight: 800; color: var(--carrot); margin-left: 0.8cqw; letter-spacing: .05em; }
+.nt__pstack { font-size: 2.05cqw; font-weight: 600; color: #8fe0aa; }
+.nt__seat.live .nt__pod   { border-color: var(--carrot); box-shadow: 0 0 0 2px rgba(244,124,32,.35), 0 4px 10px rgba(0,0,0,.3); }
+.nt__seat.folded .nt__pod { opacity: .45; filter: saturate(.4); }
+.nt__dealer {
+  position: absolute; left: 93%; top: 32%; transform: translate(-50%, -50%);
+  width: 4.1cqw; height: 4.1cqw; border-radius: 50%;
+  background: #f4f1ea; color: #20242a; font-size: 2cqw; font-weight: 800;
+  display: grid; place-items: center; box-shadow: 0 2px 5px rgba(0,0,0,.4); z-index: 3;
+}
+.nt__hero {
+  position: absolute; left: 50%; bottom: 7%; transform: translate(-50%, 0);
+  display: flex; flex-direction: column; align-items: center; gap: 0.9cqw; z-index: 4;
+}
+.nt__hero-cards { display: flex; gap: 1.1cqw; }
+.nt__hero-pod {
+  display: inline-flex; align-items: center; gap: 1.3cqw;
+  background: linear-gradient(#2d3237, #20242a);
+  border: 1px solid #6fe2a0; box-shadow: 0 0 0 2px rgba(111,226,160,.3);
+  border-radius: 1.6cqw; padding: 0.9cqw 1.8cqw; white-space: nowrap;
+}
+.nt__hero-pod .nt__ppos { color: var(--carrot); }
+.nt__hero-pod .nt__pstack { color: #8fe0aa; }
+/* cards sized to the table (board and hero are the same size) */
+.nt .card { width: 7.4cqw; border-radius: 1cqw; padding: 0.6cqw 0.8cqw; }
+.nt .card .r   { font-size: 3cqw; }
+.nt .card .s   { font-size: 2.7cqw; }
+.nt .card .pip { font-size: 3.1cqw; right: 0.8cqw; bottom: 0.4cqw; }
+.nt .nt__hero-cards .card { box-shadow: 0 5px 14px rgba(0,0,0,.4); }
+
+/* ============================================================================
  * Additions: header-right, suits key, navigation, empty state, admin
  * ==========================================================================*/
 

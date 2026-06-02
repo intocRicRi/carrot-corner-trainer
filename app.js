@@ -31,8 +31,6 @@ function renderAction(spot) {
 function renderSpot(spot) {
   // table
   renderTable(spot, document.getElementById("table"));
-  document.getElementById("caption").innerHTML =
-    `${spot.hero.pos} · ${handLabelHTML(spot.hero.cards)} · Turn decision`;
 
   // quiz text
   document.getElementById("title").textContent = spot.title;

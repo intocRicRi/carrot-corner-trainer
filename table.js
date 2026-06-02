@@ -68,51 +68,57 @@ function buildSeats(spot) {
   });
 }
 
-/** Render the felt table for a spot into `table` (a .table element). */
+/* Carrot Corner mark drawn on the felt under the board. */
+const CARROT_SVG =
+  '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+  '<g transform="rotate(8 32 32)">' +
+  '<path d="M22 26 L42 26 L33 60 Q32 63 31 60 Z" fill="#F47C20"/>' +
+  '<path d="M22 26 L42 26 L39 36 L25 36 Z" fill="#E2680F"/>' +
+  '<path d="M32 26 C30 16 22 14 18 16 C24 18 26 22 26 26 Z" fill="#3FA34D"/>' +
+  '<path d="M32 26 C34 14 42 12 47 15 C40 16 37 21 36 26 Z" fill="#4CAF50"/>' +
+  '</g></svg>';
+
+function villainSeatHTML(seat) {
+  return (
+    `<div class="nt__seat ${seat.slot} ${seat.state}">` +
+      `<div class="nt__pod"><span class="nt__pinfo">` +
+        `<span class="nt__pname">${seat.name}<span class="nt__ppos">${seat.pos}</span></span>` +
+        `<span class="nt__pstack">${seat.stack}</span>` +
+      `</span></div>` +
+    `</div>`
+  );
+}
+
+/**
+ * Render the poker table for a spot into `table` (a .table element).
+ * Layout: pot -> board -> CARROT CORNER inside the felt; villains on the rail;
+ * hero hand seated on the bottom rail, overlapping only the felt's edge.
+ */
 function renderTable(spot, table) {
-  table.innerHTML = "";
+  table.classList.add("nt");
+  const villains = buildSeats(spot).filter(s => s.slot !== "hero").map(villainSeatHTML).join("");
 
-  const felt = document.createElement("div");
-  felt.className = "felt";
-  felt.innerHTML = `<div class="felt__mark">CARROT&nbsp;CORNER</div>`;
-  table.appendChild(felt);
+  table.innerHTML =
+    `<div class="nt__frame">` +
+      `<div class="nt__felt"></div>` +
+      `<div class="nt__pot">Pot <b>${spot.potBB} BB</b></div>` +
+      `<div class="nt__board"></div>` +
+      `<div class="nt__brand">${CARROT_SVG}<span>CARROT&nbsp;CORNER</span></div>` +
+      villains +
+      `<div class="nt__dealer">D</div>` +
+      `<div class="nt__hero">` +
+        `<div class="nt__hero-cards"></div>` +
+        `<div class="nt__hero-pod"><span class="nt__pinfo">` +
+          `<span class="nt__pname">Hero<span class="nt__ppos">${spot.hero.pos}</span></span>` +
+          `<span class="nt__pstack">100 BB</span>` +
+        `</span></div>` +
+      `</div>` +
+    `</div>`;
 
-  const pot = document.createElement("div");
-  pot.className = "pot";
-  pot.innerHTML = `Pot: <small>${spot.potBB} BB</small>`;
-  table.appendChild(pot);
-
-  const board = document.createElement("div");
-  board.className = "board";
+  const board = table.querySelector(".nt__board");
   spot.board.forEach(c => board.appendChild(cardEl(c)));
-  table.appendChild(board);
-
-  buildSeats(spot).forEach(seat => {
-    const el = document.createElement("div");
-    el.className = `seat ${seat.slot} ${seat.state}`.trim();
-    const pod = document.createElement("div");
-    pod.className = "seat__pod";
-    pod.innerHTML =
-      `<div class="seat__name">${seat.name}<span class="seat__pos">${seat.pos}</span></div>` +
-      `<div class="seat__stack">${seat.stack}</div>` +
-      (seat.note ? `<div class="seat__note">${seat.note}</div>` : "");
-    if (seat.slot === "hero") {
-      const hc = document.createElement("div");
-      hc.className = "holecards";
-      spot.hero.cards.forEach(c => hc.appendChild(cardEl(c)));
-      el.appendChild(hc);
-    }
-    el.appendChild(pod);
-    table.appendChild(el);
-  });
-
-  // dealer button (just inside the felt, toward the BTN seat / top-right)
-  const d = document.createElement("div");
-  d.className = "dealer";
-  d.textContent = "D";
-  d.style.left = "69%";
-  d.style.top = "34%";
-  table.appendChild(d);
+  const hc = table.querySelector(".nt__hero-cards");
+  spot.hero.cards.forEach(c => hc.appendChild(cardEl(c)));
 }
 
 /* The five answer grades, in order of quality (drive colours + labels). */

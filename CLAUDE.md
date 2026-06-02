@@ -20,8 +20,9 @@ Carrot Corner branding/assets.
 
 ## Run & preview locally
 
-- Preview config **`carrot-trainer`** (in `C:\Users\UKGC\Documents\Claude\LIA\.claude\launch.json`):
-  python `http.server` on **port 47830** serving this folder.
+- Preview config **`carrot-trainer`** (in `C:\Users\UKGC\Documents\Claude\LIA\.claude\launch.json`)
+  runs **`serve.py`** on **port 47830** — a threaded static server with **no-cache**
+  headers (plain `python -m http.server` lets the browser cache JS/CSS and hide edits).
 - Trainer: <http://localhost:47830/index.html> · Admin: `/admin.html`
 - Source is plain static files — just reload after edits (no build step).
 - If the preview server isn't listed, start it again (it stops on machine restarts).
