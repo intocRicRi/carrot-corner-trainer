@@ -1,0 +1,52 @@
+/* ============================================================================
+ * Page-layout exploration. Loaded AFTER styles.css.
+ * ==========================================================================*/
+.app--wide { max-width: 1180px; }
+.vintro { color: #5a5148; font-size: 14px; max-width: 820px; margin: 0 0 20px; line-height: 1.5; }
+.ld__title { margin: 26px 0 2px; font-size: 16px; font-weight: 800; color: var(--ink); }
+.ld__desc  { margin: 0 0 10px; font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; max-width: 880px; }
+
+/* a box that simulates one laptop content area (header excluded) */
+.screen {
+  height: 600px; overflow: hidden;
+  border: 1px solid var(--line); border-radius: 14px;
+  background: linear-gradient(135deg, #f9f5ef 0%, #f3ece1 100%);
+  box-shadow: var(--shadow); padding: 16px; box-sizing: border-box;
+}
+.layoutdemo { height: 100%; display: grid; gap: 14px; }
+
+/* the panels */
+.ld__decision, .ld__coach {
+  background: #fff; border: 1px solid var(--line); border-radius: 14px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+  min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 8px;
+}
+.ld__table { align-self: start; width: 100%; }
+
+/* arrangements */
+.A { grid-template-columns: 1.0fr 1fr 1.05fr; grid-template-areas: "table decision coach"; align-items: start; }
+.B { grid-template-columns: 1.15fr 1fr; grid-template-rows: auto 1fr; grid-template-areas: "table decision" "coach decision"; align-items: start; }
+.C { grid-template-columns: 1.1fr 1fr; grid-template-areas: "table decision"; align-items: start; }
+.D { grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; grid-template-areas: "table table" "decision coach"; }
+.D .ld__table { max-width: 420px; justify-self: center; }
+
+.ld__table  { grid-area: table; }
+.ld__decision { grid-area: decision; }
+.ld__coach  { grid-area: coach; }
+
+/* compact the shared components so everything fits one screen */
+.screen .quiz__head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.screen .quiz__title { margin: 0; font-size: 16.5px; }
+.screen .quiz__stakes { margin: 0; }
+.screen .streets { margin: 4px 0 2px; }
+.screen .street { padding: 6px 12px; font-size: 12.5px; }
+.screen .question { margin: 6px 2px; font-size: 14px; }
+.screen .options { gap: 7px; }
+.screen .option { padding: 7px 12px; border-radius: 10px; }
+.screen .option__code { font-size: 14px; }
+.screen .option__gto { top: -9px; }
+.screen .feedback { margin: 0; padding: 12px 14px; }
+.screen .feedback__text { font-size: 12.5px; line-height: 1.5; }
+.screen .feedback__actions { margin-top: 10px; }
+.screen .legend { margin: 0 0 8px; }
+.screen .ld__fb { flex: 1 1 auto; }

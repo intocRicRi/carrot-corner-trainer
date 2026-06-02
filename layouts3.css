@@ -1,0 +1,133 @@
+/* ============================================================================
+ * Layout round 3 — 5 styled variations. Loaded AFTER styles.css.
+ * ==========================================================================*/
+.app--wide { max-width: 1180px; }
+.vintro { color: #5a5148; font-size: 14px; max-width: 880px; margin: 0 0 16px; line-height: 1.5; }
+.ld-h { margin: 26px 0 8px; font-size: 16px; font-weight: 800; color: var(--ink); }
+
+.screen {
+  height: 580px; overflow: hidden; border: 1px solid var(--line); border-radius: 16px;
+  background: linear-gradient(135deg, #f9f5ef 0%, #f3ece1 100%);
+  box-shadow: var(--shadow); padding: 16px; box-sizing: border-box;
+}
+.screen--dark     { background: #13171c; border-color: #2a3037; }
+.screen--midnight { background: radial-gradient(120% 120% at 28% 18%, #20303f 0%, #0e1117 70%); border-color: #243140; }
+
+.ld { height: 100%; display: grid; gap: 14px; }
+.ld-banner  { grid-area: banner; }
+.ld-table   { grid-area: table; align-self: start; width: 100%; }
+.ld-action  { grid-area: action; align-self: center; }
+.ld-answers { grid-area: answers; }
+.ld-legend  { grid-area: legend; }
+.ld-coach   { grid-area: coach; min-height: 0; overflow: hidden; }
+
+/* ---- banner ------------------------------------------------------------- */
+.ld-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 7px 12px;
+}
+.ld-theme { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 800;
+  font-size: 15.5px; color: var(--ink); background: none; border: none; cursor: pointer; }
+.ld-chev { color: var(--carrot-dark); font-size: 12px; }
+.ld-nav { display: flex; align-items: center; gap: 7px; }
+.ld-navbtn { width: 28px; height: 28px; border-radius: 8px; border: 1.5px solid var(--line); background: #fff; cursor: pointer; color: var(--ink); }
+.ld-count { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); min-width: 80px; text-align: center; }
+.ld-shuffle { font: inherit; font-size: 12px; font-weight: 700; border: 1.5px solid var(--line); background: #fff; color: var(--carrot-dark); border-radius: 8px; padding: 5px 9px; cursor: pointer; }
+
+/* ---- simplified action line --------------------------------------------- */
+.ld-action { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 9px; font-size: 13px; color: #4a525a; }
+.ld-act { white-space: nowrap; }
+.ld-act b { color: var(--ink); font-weight: 700; }
+.ld-act:not(:last-child)::after { content: "›"; margin-left: 9px; color: #b9b2a8; }
+.ld-act--live { font-weight: 800; color: var(--carrot-dark); }
+.ld-act--live::after { content: "" !important; }
+
+/* ---- answers ------------------------------------------------------------ */
+.ld-answers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; align-content: start; }
+.ans { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 11px 8px; border: 2px solid var(--line); border-radius: 12px; background: #fff; cursor: pointer; font: inherit; min-width: 0; }
+.ans__code { font-weight: 800; font-size: 15.5px; color: var(--ink); white-space: nowrap; }
+.ans__sub { font-size: 11px; color: var(--ink-soft); white-space: nowrap; }
+.ans__gto { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: #0f7a31; color: #fff;
+  font-size: 9.5px; font-weight: 800; padding: 1px 7px; border-radius: 999px; opacity: 0; white-space: nowrap; }
+.ans__gto.show { opacity: 1; }
+.ans__pick { position: absolute; top: 5px; right: 5px; width: 15px; height: 15px; border-radius: 50%;
+  background: var(--ink); color: #fff; font-size: 9px; font-weight: 800; display: grid; place-items: center; }
+.ans.picked { box-shadow: inset 0 0 0 2.5px rgba(28,32,37,.55); }
+.ans.score-best { background: #e7f6ec; border-color: var(--s-best); }
+.ans.score-good { background: #eefaee; border-color: var(--s-good); }
+.ans.score-okay { background: #fdf6dd; border-color: var(--s-okay); }
+.ans.score-mistake { background: #fdeede; border-color: var(--s-mistake); }
+.ans.score-horrible { background: #fbe6e6; border-color: var(--s-horrible); }
+
+/* ---- labelled legend ---------------------------------------------------- */
+.ld-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 13px; font-size: 11.5px; color: var(--ink-soft); }
+.ld-legtitle { font-weight: 800; color: var(--ink); margin-right: 2px; }
+.ld-leg { display: inline-flex; align-items: center; gap: 5px; }
+
+/* ---- coach -------------------------------------------------------------- */
+.ld-coach { background: linear-gradient(#fff8f1, #fdf2e7); border: 1px solid #f4d9bd; border-radius: 12px; padding: 12px 14px; }
+.ld-coachhead { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.ld-coachname { font-weight: 800; font-size: 14px; color: var(--ink); }
+.ld-coachrole { font-size: 11px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--carrot-dark); }
+.ld-coachtext { margin: 0; font-size: 13px; line-height: 1.55; color: #3a4047; }
+
+/* ============================ GRIDS ===================================== */
+.v-A, .v-B, .v-C, .v-D {
+  grid-template-columns: 1.18fr 1fr;
+  grid-template-rows: auto auto auto auto 1fr;
+  grid-template-areas: "banner banner" "table action" "table answers" "table legend" "table coach";
+}
+.v-E {
+  grid-template-columns: 1.18fr 1fr;
+  grid-template-rows: auto auto auto auto 1fr;
+  grid-template-areas: "banner banner" "table action" "table answers" "table legend" "coach coach";
+}
+
+/* ====================== B · Dark Premium ================================ */
+.v-B .ld-banner { background: #1b2128; border-color: rgba(255,255,255,.08); }
+.v-B .ld-theme, .v-B .ld-count { color: #eef1f4; }
+.v-B .ld-navbtn, .v-B .ld-shuffle { background: #232a32; border-color: rgba(255,255,255,.12); color: #cdd4da; }
+.v-B .ld-action { color: #9aa3ab; }
+.v-B .ld-act b { color: #eef1f4; }
+.v-B .ld-act--live { color: #ffb061; }
+.v-B .ans { background: #1b2128; border-color: rgba(255,255,255,.12); }
+.v-B .ans__code { color: #eef1f4; }
+.v-B .ans.picked { box-shadow: inset 0 0 0 2.5px rgba(255,255,255,.55); }
+.v-B .ans.score-best { background: rgba(21,127,51,.22); }
+.v-B .ans.score-good { background: rgba(92,184,92,.20); }
+.v-B .ans.score-okay { background: rgba(231,176,8,.16); }
+.v-B .ld-legend { color: #9aa3ab; }
+.v-B .ld-legtitle { color: #eef1f4; }
+.v-B .ld-coach { background: linear-gradient(#1b2128, #151a20); border: 1px solid rgba(255,255,255,.09); }
+.v-B .ld-coachname { color: #eef1f4; }
+.v-B .ld-coachrole { color: #ffb061; }
+.v-B .ld-coachtext { color: #c2c9d0; }
+
+/* ====================== C · Midnight Glass ============================== */
+.v-C .ld-banner, .v-C .ans, .v-C .ld-coach {
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14);
+  -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
+}
+.v-C .ld-theme, .v-C .ld-count, .v-C .ans__code, .v-C .ld-coachname { color: #eaf2f8; }
+.v-C .ld-navbtn, .v-C .ld-shuffle { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16); color: #cfe0ec; }
+.v-C .ld-action, .v-C .ld-legend { color: #9fb3c4; }
+.v-C .ld-act b { color: #eaf2f8; }
+.v-C .ld-act--live { color: #5fe0b0; }
+.v-C .ld-legtitle, .v-C .ld-shuffle { color: #eaf2f8; }
+.v-C .ans.picked { box-shadow: inset 0 0 0 2.5px rgba(95,224,176,.7); }
+.v-C .ans.score-best { background: rgba(21,170,90,.26); border-color: #2fd089; }
+.v-C .ans.score-good { background: rgba(92,184,92,.22); }
+.v-C .ans.score-okay { background: rgba(231,176,8,.18); }
+.v-C .ld-coachrole { color: #5fe0b0; }
+.v-C .ld-coachtext { color: #c9d8e4; }
+
+/* ====================== D · Editorial (classy light) ==================== */
+.v-D .ld-banner { background: #fff; border: none; border-bottom: 2px solid var(--ink); border-radius: 0; padding: 6px 4px 10px; }
+.v-D .ld-theme { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 18px; }
+.v-D .ld-action { font-family: "Fraunces", Georgia, serif; font-size: 14px; font-style: italic; color: #5a5048; }
+.v-D .ld-act b { font-style: normal; }
+.v-D .ans { border-radius: 6px; }
+.v-D .ld-coach { background: #fff; border: none; border-left: 3px solid var(--carrot); border-radius: 0; }
+.v-D .ld-coachtext { font-family: "Fraunces", Georgia, serif; font-size: 14.5px; line-height: 1.6; color: #33383e; }
+.v-D .ld-coachrole { color: #9a7a4a; }

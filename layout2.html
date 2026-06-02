@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Layout v2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="layout2.css" />
+</head>
+<body>
+  <div class="app app--wide">
+    <p class="vintro">
+      Layout v2 — a problem-type banner with theme + hand switching, a compact one-line
+      hand summary, and a single row of answers (no A/B/C/D). Shown answered; the coach tip
+      sits in view with no scrolling.
+    </p>
+
+    <div class="screen">
+      <div class="v2">
+        <!-- banner -->
+        <header class="v2__banner">
+          <button class="v2__theme">Turn Probe Opportunity <span class="v2__chev">▾</span></button>
+          <div class="v2__nav">
+            <button class="v2__navbtn" aria-label="Previous hand">◀</button>
+            <span class="v2__count">Hand 1 / 12</span>
+            <button class="v2__navbtn" aria-label="Next hand">▶</button>
+            <button class="v2__shuffle">⤳ Random</button>
+          </div>
+        </header>
+
+        <!-- body: table + interaction -->
+        <div class="v2__body">
+          <div class="table v2__table"></div>
+
+          <div class="v2__panel">
+            <!-- compact hand summary -->
+            <div class="hud">
+              <span class="hud__seg"><b>BB</b> <span class="suit-s">♠</span>K <span class="suit-s">♠</span>J</span>
+              <span class="hud__seg">CO opens 2.5 BB · Hero calls</span>
+              <span class="hud__seg">Flop <span class="suit-h">♥</span>8 <span class="suit-d">♦</span>K <span class="suit-h">♥</span>7 · check / check</span>
+              <span class="hud__seg hud__seg--live">Turn <span class="suit-s">♠</span>3 · you act</span>
+            </div>
+
+            <!-- answers: one row, no keys -->
+            <div class="v2__answers"></div>
+
+            <!-- coach -->
+            <div class="v2__coach">
+              <div class="v2__coachhead">
+                <span class="feedback__avatar">PC</span>
+                <span class="feedback__name v2__author"></span>
+                <span class="feedback__role">Coach feedback</span>
+                <span class="v2__legend">
+                  <i class="dot s-best"></i><i class="dot s-good"></i><i class="dot s-okay"></i><i class="dot s-mistake"></i><i class="dot s-horrible"></i>
+                </span>
+              </div>
+              <p class="v2__fbtext"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="table.js"></script>
+  <script src="layout2.js"></script>
+</body>
+</html>

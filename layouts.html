@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page layout options</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="layouts.css" />
+</head>
+<body>
+  <div class="app app--wide">
+    <header class="brand">
+      <div class="brand__text">
+        <span class="brand__name">CARROT CORNER</span>
+        <span class="brand__tag">Page layout — 4 no-scroll options (shown after answering)</span>
+      </div>
+    </header>
+    <p class="vintro">
+      Each box simulates one laptop screen. All are shown in the answered state — the goal
+      is that the coach feedback appears <b>without scrolling</b>. Pick a direction.
+    </p>
+
+    <h3 class="ld__title">A · Three columns — Table · Decision · Coach</h3>
+    <p class="ld__desc">Coach gets its own column (reserved from the start), so nothing shifts on answer. Trade-off: the table is smaller.</p>
+    <div class="screen"><div class="layoutdemo A">
+      <div class="table ld__table"></div><div class="ld__decision"></div><div class="ld__coach"></div>
+    </div></div>
+
+    <h3 class="ld__title">B · Coach under the table</h3>
+    <p class="ld__desc">Left column = table on top, coach below it (uses the empty space under the table). Right column = the decision. Table stays big.</p>
+    <div class="screen"><div class="layoutdemo B">
+      <div class="table ld__table"></div><div class="ld__decision"></div><div class="ld__coach"></div>
+    </div></div>
+
+    <h3 class="ld__title">C · Coach replaces the action panel</h3>
+    <p class="ld__desc">Two columns. Once answered, the hand-history shorthand is swapped for the coach tip in the same spot — no third column, table stays large.</p>
+    <div class="screen"><div class="layoutdemo C">
+      <div class="table ld__table"></div><div class="ld__decision"></div>
+    </div></div>
+
+    <h3 class="ld__title">D · Table on top, decision + coach below</h3>
+    <p class="ld__desc">Table as a centered banner up top, then options and coach side by side underneath. Good for wide, short screens.</p>
+    <div class="screen"><div class="layoutdemo D">
+      <div class="table ld__table"></div><div class="ld__decision"></div><div class="ld__coach"></div>
+    </div></div>
+  </div>
+
+  <script src="table.js"></script>
+  <script src="layouts.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+/* ============================================================================
+ * Refined Midnight Glass. Loaded AFTER styles.css + layouts3.css.
+ * ==========================================================================*/
+
+/* ---- per-street action recap (one line per street) ---------------------- */
+.ld-streets { display: grid; gap: 6px; width: 100%; }
+.ld-street { display: grid; grid-template-columns: 58px 1fr; align-items: baseline; gap: 12px; }
+.ld-street__name { font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #7d93a6; }
+.ld-street__act { font-size: 13px; color: #cdd9e3; }
+.v-C .ld-street--live .ld-street__name { color: #5fe0b0; }
+.v-C .ld-street--live .ld-street__act { font-weight: 700; color: #5fe0b0; }
+
+/* dark pick marker + ring (works on both treatments) */
+.v-C .ans__pick { background: #eef5fb; color: #0f1620; }
+.v-C .ans.picked { outline: 2px solid rgba(255,255,255,.72); outline-offset: 2px; }
+
+/* ---- C1 · filled answers (solid colour, high contrast) ------------------ */
+.c1 .ans { background: #17222f; border: 1.5px solid rgba(255,255,255,.18);
+  -webkit-backdrop-filter: none; backdrop-filter: none; }
+.c1 .ans__code { color: #eef5fb; }
+.c1 .ans__sub  { color: #9fb3c4; }
+.c1 .ans.score-best     { background: #15663e; border-color: #3ad98c; }
+.c1 .ans.score-good     { background: #1e7048; border-color: #5cd594; }
+.c1 .ans.score-okay     { background: #6f5512; border-color: #ecc23a; }
+.c1 .ans.score-mistake  { background: #743f1c; border-color: #ef8a3c; }
+.c1 .ans.score-horrible { background: #702626; border-color: #e85d5d; }
+.c1 .ans.score-best .ans__code,    .c1 .ans.score-best .ans__sub     { color: #eafff4; }
+.c1 .ans.score-good .ans__code                                       { color: #eafff2; }
+.c1 .ans.score-okay .ans__code,    .c1 .ans.score-okay .ans__sub     { color: #fff5d8; }
+.c1 .ans.score-mistake .ans__code, .c1 .ans.score-mistake .ans__sub  { color: #ffeede; }
+.c1 .ans.score-horrible .ans__code,.c1 .ans.score-horrible .ans__sub { color: #ffe6e6; }
+
+/* ---- C2 · outline + glow answers ---------------------------------------- */
+.c2 .ans { background: #121b26; border: 2px solid rgba(255,255,255,.16);
+  -webkit-backdrop-filter: none; backdrop-filter: none; }
+.c2 .ans__code { color: #eef5fb; }
+.c2 .ans__sub  { color: #92a6b6; }
+.c2 .ans.score-best     { border-color: #34d27f; box-shadow: 0 0 0 1px #34d27f, 0 0 16px rgba(52,210,127,.40); }
+.c2 .ans.score-good     { border-color: #5cd594; box-shadow: 0 0 0 1px #5cd594, 0 0 14px rgba(92,213,148,.32); }
+.c2 .ans.score-okay     { border-color: #ecc23a; box-shadow: 0 0 0 1px #ecc23a, 0 0 14px rgba(236,194,58,.30); }
+.c2 .ans.score-mistake  { border-color: #ef8a3c; box-shadow: 0 0 0 1px #ef8a3c, 0 0 14px rgba(239,138,60,.30); }
+.c2 .ans.score-horrible { border-color: #e85d5d; box-shadow: 0 0 0 1px #e85d5d, 0 0 14px rgba(232,93,93,.30); }
+.c2 .ans.score-best .ans__code     { color: #7ff0b4; }
+.c2 .ans.score-good .ans__code     { color: #a9eecb; }
+.c2 .ans.score-okay .ans__code     { color: #ffe49f; }
+.c2 .ans.score-mistake .ans__code  { color: #ffc999; }
+.c2 .ans.score-horrible .ans__code { color: #ffb0b0; }
