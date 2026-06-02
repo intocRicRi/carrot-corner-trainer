@@ -12,8 +12,13 @@ const GRADE_LABELS = [
 ];
 
 async function loadDeck() {
+  // Use local drafts only if they match the current schema (have a street recap);
+  // this skips stale hands saved before the format change.
   const local = readLocalDeck();
-  if (local && local.length) return local;
+  if (local) {
+    const valid = local.filter(s => Array.isArray(s.recap) && s.recap.length);
+    if (valid.length) return valid;
+  }
   return await fetchPublishedDeck();
 }
 
