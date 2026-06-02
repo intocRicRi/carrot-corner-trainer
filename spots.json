@@ -1,0 +1,29 @@
+[
+  {
+    "id": "seed-turn-probe-kj",
+    "scenario": "turn-probe",
+    "title": "Turn Probe Opportunity",
+    "stakes": "$0.25 NL · 6-max",
+    "effective": "Effective stacks ≈ 100 BB",
+    "potBB": 5.5,
+    "openBB": 2.5,
+    "hero": { "pos": "BB", "cards": ["Ks", "Js"] },
+    "raiserPos": "CO",
+    "board": ["8h", "Kd", "7h", "3s"],
+    "description": [
+      "You're in the <b>Big Blind</b> with <b>K<span class=\"suit-s\">♠</span> J<span class=\"suit-s\">♠</span></b>.",
+      "The Cutoff opens to 2.5 BB. It folds to you; you call. Heads-up to the flop (pot 5.5 BB).",
+      "<b>Flop (8<span class=\"suit-h\">♥</span> K<span class=\"suit-d\">♦</span> 7<span class=\"suit-h\">♥</span>):</b> you check, the Cutoff checks back.",
+      "<b>Turn (3<span class=\"suit-s\">♠</span>):</b> the action is on you."
+    ],
+    "question": "The pre-flop raiser declined to c-bet the flop. On the 3<span class=\"suit-s\">♠</span> turn, what is your play with K<span class=\"suit-s\">♠</span> J<span class=\"suit-s\">♠</span>?",
+    "options": [
+      { "id": "A", "code": "X",    "label": "Check",            "sub": "pot control", "score": "okay", "gto": true },
+      { "id": "B", "code": "B33",  "label": "Bet 33% pot",      "sub": "≈ 1.8 BB", "score": "okay", "gto": true },
+      { "id": "C", "code": "B75",  "label": "Bet 75% pot",      "sub": "≈ 4.1 BB", "score": "best", "gto": true },
+      { "id": "D", "code": "B150", "label": "Overbet 150% pot", "sub": "≈ 8.3 BB", "score": "best", "gto": true }
+    ],
+    "feedback": "In theory all options are okay with this hand. In practice, a small bet is likely to underperform due to the lack of raising by population in this node. Population is likely quite capped and condensed when they check the flop here. Hands like 8x, 7x and 99, TT, JJ, QQ and weak top pair will appear at a higher frequency than in theory. Therefore B75 and B150 are the best options. X/B33 will also underperform due to lack of aggression across turn and river from the pool.",
+    "author": "Pete Clarke"
+  }
+]

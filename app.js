@@ -1,118 +1,44 @@
 /* ============================================================================
- * Carrot Corner Trainer — app logic
- * Renders a spot (table + quiz) from data and handles answer feedback.
+ * Carrot Corner Trainer — trainer logic
+ * Loads the deck, shows a count, plays spots one at a time with colour reveal.
  * ==========================================================================*/
 
-const SUITS = {
-  h: { sym: "♥", cls: "red"  },
-  d: { sym: "♦", cls: "red"  },
-  s: { sym: "♠", cls: "dark" },
-  c: { sym: "♣", cls: "dark" }
-};
+let DECK = [];
+let index = 0;
 
-const RANK_DISPLAY = { T: "10" };
-
-function rankOf(card) { const r = card.slice(0, -1); return RANK_DISPLAY[r] || r; }
-function suitOf(card) { return SUITS[card.slice(-1)]; }
-
-/** Build a playing-card element. */
-function cardEl(card, { hole = false } = {}) {
-  const suit = suitOf(card);
-  const el = document.createElement("div");
-  el.className = `card ${suit.cls}`;
-  el.innerHTML =
-    `<span class="r">${rankOf(card)}</span>` +
-    `<span class="s">${suit.sym}</span>` +
-    `<span class="pip">${suit.sym}</span>`;
-  return el;
+async function loadDeck() {
+  const local = readLocalDeck();
+  if (local && local.length) return local;   // drafts on this browser
+  return await fetchPublishedDeck();          // committed spots.json
 }
 
-/** Render the felt table for a spot. */
-function renderTable(spot) {
-  const table = document.getElementById("table");
-  table.innerHTML = "";
+function renderSpot(spot) {
+  // table
+  renderTable(spot, document.getElementById("table"));
+  document.getElementById("caption").innerHTML =
+    `${spot.hero.pos} · ${handLabelHTML(spot.hero.cards)} · Turn decision`;
 
-  const felt = document.createElement("div");
-  felt.className = "felt";
-  felt.innerHTML = `<div class="felt__mark">CARROT&nbsp;CORNER</div>`;
-  table.appendChild(felt);
-
-  // pot pill
-  const pot = document.createElement("div");
-  pot.className = "pot";
-  pot.innerHTML = `Pot: <small>${spot.potBB} BB</small>`;
-  table.appendChild(pot);
-
-  // board cards
-  const board = document.createElement("div");
-  board.className = "board";
-  spot.board.forEach(c => board.appendChild(cardEl(c)));
-  table.appendChild(board);
-
-  // pot chips marker
-  const chips = document.createElement("div");
-  chips.className = "potchips";
-  chips.textContent = `${spot.potBB} BB`;
-  table.appendChild(chips);
-
-  // seats
-  spot.seats.forEach(seat => {
-    const el = document.createElement("div");
-    el.className = `seat ${seat.slot} ${seat.state}`;
-    const pod = document.createElement("div");
-    pod.className = "seat__pod";
-    pod.innerHTML =
-      `<div class="seat__name">${seat.name}<span class="seat__pos">${seat.pos}</span></div>` +
-      `<div class="seat__stack">${seat.stack}</div>` +
-      (seat.note ? `<div class="seat__note">${seat.note}</div>` : "");
-
-    // hero shows hole cards above the pod
-    if (seat.slot === "hero") {
-      const hc = document.createElement("div");
-      hc.className = "holecards";
-      spot.hero.cards.forEach(c => hc.appendChild(cardEl(c, { hole: true })));
-      el.appendChild(hc);
-    }
-    el.appendChild(pod);
-    table.appendChild(el);
-  });
-
-  // dealer button near the BTN seat
-  const btn = spot.seats.find(s => s.pos === "BTN");
-  if (btn) {
-    const d = document.createElement("div");
-    d.className = "dealer";
-    d.textContent = "D";
-    // anchor it roughly inside the felt toward the BTN seat
-    d.style.left = "76%";
-    d.style.top = "62%";
-    table.appendChild(d);
-  }
-
-  document.getElementById("caption").textContent =
-    `${spot.hero.pos} · ${spot.hero.cards.map(c => rankOf(c) + suitOf(c).sym).join(" ")} · Turn decision`;
-}
-
-/** Render the quiz portion. */
-function renderQuiz(spot) {
+  // quiz text
   document.getElementById("title").textContent = spot.title;
   document.getElementById("stakes").textContent = `${spot.stakes} · ${spot.effective}`;
-  document.getElementById("question").textContent = spot.question;
-  document.getElementById("author").textContent = spot.author;
+  document.getElementById("question").innerHTML = spot.question;
+  document.getElementById("author").textContent = spot.author || "Coach";
   document.getElementById("feedbackText").textContent = spot.feedback;
+  document.getElementById("progress").textContent = `Spot ${index + 1} / ${DECK.length}`;
 
-  const desc = document.getElementById("description");
-  desc.innerHTML = spot.description.map(line => `<p>${line}</p>`).join("");
+  document.getElementById("description").innerHTML =
+    spot.description.map(line => `<p>${line}</p>`).join("");
 
+  // options
   const wrap = document.getElementById("options");
+  wrap.className = "options";
   wrap.innerHTML = "";
   spot.options.forEach(opt => {
     const b = document.createElement("button");
     b.className = "option";
     b.dataset.id = opt.id;
-    b.dataset.score = opt.score;
     b.innerHTML =
-      `<span class="option__gto${opt.gto ? "" : " no-gto"}">GTO&nbsp;✅</span>` +
+      `<span class="option__gto">GTO&nbsp;✅</span>` +
       `<span class="option__key">${opt.id}</span>` +
       `<span class="option__body">` +
         `<span class="option__code">${opt.code}</span>` +
@@ -123,9 +49,12 @@ function renderQuiz(spot) {
     b.addEventListener("click", () => reveal(spot, opt.id));
     wrap.appendChild(b);
   });
+
+  // reset reveal state
+  document.getElementById("legend").hidden = true;
+  document.getElementById("feedback").hidden = true;
 }
 
-/** Reveal scoring after the student answers. */
 function reveal(spot, pickedId) {
   const wrap = document.getElementById("options");
   if (wrap.classList.contains("answered")) return;
@@ -134,7 +63,7 @@ function reveal(spot, pickedId) {
   spot.options.forEach(opt => {
     const b = wrap.querySelector(`[data-id="${opt.id}"]`);
     b.disabled = true;
-    b.classList.add(`score-${opt.score}`);
+    if (opt.score) b.classList.add(`score-${opt.score}`);
     if (opt.id === pickedId) b.classList.add("picked");
     if (opt.gto) b.querySelector(".option__gto").classList.add("show");
   });
@@ -144,10 +73,34 @@ function reveal(spot, pickedId) {
   document.getElementById("feedback").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
-function start(spot) {
-  renderTable(spot);
-  renderQuiz(spot);
-  document.getElementById("reset").addEventListener("click", () => start(spot), { once: true });
+function show(i) {
+  index = (i + DECK.length) % DECK.length;
+  renderSpot(DECK[index]);
 }
 
-document.addEventListener("DOMContentLoaded", () => start(SPOTS[0]));
+function updateCount() {
+  document.getElementById("deckCount").textContent =
+    `${DECK.length} hand${DECK.length === 1 ? "" : "s"}`;
+}
+
+async function init() {
+  DECK = await loadDeck();
+  updateCount();
+
+  const empty = document.getElementById("empty");
+  const layout = document.getElementById("layout");
+  if (!DECK.length) {
+    empty.hidden = false;
+    layout.hidden = true;
+    return;
+  }
+  empty.hidden = true;
+  layout.hidden = false;
+
+  document.getElementById("retry").addEventListener("click", () => show(index));
+  document.getElementById("next").addEventListener("click", () => show(index + 1));
+
+  show(0);
+}
+
+document.addEventListener("DOMContentLoaded", init);

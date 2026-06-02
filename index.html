@@ -13,7 +13,6 @@
   <div class="app">
     <header class="brand">
       <div class="brand__logo" aria-hidden="true">
-        <!-- simple carrot mark -->
         <svg viewBox="0 0 64 64" width="34" height="34">
           <g transform="rotate(8 32 32)">
             <path d="M22 26 L42 26 L33 60 Q32 63 31 60 Z" fill="#F47C20"/>
@@ -27,21 +26,38 @@
         <span class="brand__name">CARROT CORNER</span>
         <span class="brand__tag">NLHE 6-max Cash · Trainer</span>
       </div>
+      <div class="brand__right">
+        <span class="deck-count" id="deckCount" title="Hands in this deck">0 hands</span>
+        <a class="admin-link" href="admin.html">Admin →</a>
+      </div>
     </header>
 
-    <main class="layout">
+    <!-- Empty-deck state -->
+    <div class="empty" id="empty" hidden>
+      <h2>No hands yet</h2>
+      <p>Head to the <a href="admin.html">Admin page</a> to generate and grade your first spot.</p>
+    </div>
+
+    <main class="layout" id="layout">
       <!-- The visual "spot" -->
       <section class="spot" aria-label="Poker spot">
         <div class="table" id="table"></div>
         <div class="spot__caption" id="caption"></div>
+        <div class="suitkey" aria-label="Four-colour deck key">
+          <span><i class="suit-s">♠</i> Spades</span>
+          <span><i class="suit-h">♥</i> Hearts</span>
+          <span><i class="suit-d">♦</i> Diamonds</span>
+          <span><i class="suit-c">♣</i> Clubs</span>
+        </div>
       </section>
 
       <!-- The quiz -->
       <section class="quiz">
         <div class="quiz__head">
           <h1 class="quiz__title" id="title"></h1>
-          <p class="quiz__stakes" id="stakes"></p>
+          <span class="quiz__progress" id="progress"></span>
         </div>
+        <p class="quiz__stakes" id="stakes"></p>
 
         <div class="action" id="description"></div>
 
@@ -65,13 +81,16 @@
             <span class="feedback__role">Coach feedback</span>
           </div>
           <p class="feedback__text" id="feedbackText"></p>
-          <button class="btn-reset" id="reset">Try again</button>
+          <div class="feedback__actions">
+            <button class="btn-ghost" id="retry">Try again</button>
+            <button class="btn-primary" id="next">Next hand →</button>
+          </div>
         </div>
       </section>
     </main>
   </div>
 
-  <script src="spots.js"></script>
+  <script src="table.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
