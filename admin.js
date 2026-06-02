@@ -1,10 +1,16 @@
 /* ============================================================================
  * Carrot Corner Trainer — admin logic
- * Generate a hand for the probe scenario, let the coach grade it, save to deck.
+ * Generate a probe hand, grade it, and publish it to the public site by
+ * committing spots.json to GitHub via the API (token kept in this browser only).
  * ==========================================================================*/
 
-let deck = [];        // working deck (mirrors localStorage 'ccTrainerDeck')
+/* Repo coordinates for publishing. */
+const REPO = { owner: "intocRicRi", name: "carrot-corner-trainer", branch: "main", path: "spots.json" };
+const TOKEN_KEY = "ccGitHubToken";
+
+let deck = [];        // working deck (mirrors localStorage + published spots.json)
 let current = null;   // generated-but-not-yet-saved spot
+let ghToken = null;   // GitHub token (localStorage only, never committed)
 
 /* ---- hand generation ----------------------------------------------------- */
 
@@ -25,7 +31,6 @@ function pickRaiser(forced) {
   return opts.includes(forced) ? forced : opts[Math.floor(Math.random() * opts.length)];
 }
 
-/* Option order for this scenario: Check · B33 · B75 · B150 */
 function makeOptions(potBB) {
   const sz = f => `≈ ${(potBB * f).toFixed(1)} BB`;
   return [
@@ -39,10 +44,10 @@ function makeOptions(potBB) {
 function generateSpot(forcedRaiser) {
   const d = shuffle(fullDeck());
   const heroCards = [d[0], d[1]];
-  const board = [d[2], d[3], d[4], d[5]]; // flop (3) + turn (1)
+  const board = [d[2], d[3], d[4], d[5]];
   const raiser = pickRaiser(forcedRaiser);
   const openBB = 2.5;
-  const potBB = +(openBB * 2 + 0.5).toFixed(1); // 5.5
+  const potBB = +(openBB * 2 + 0.5).toFixed(1);
 
   const heroLbl = handLabelHTML(heroCards);
   const flopLbl = board.slice(0, 3).map(cardLabelHTML).join(" ");
@@ -90,25 +95,19 @@ function renderGradeForm(spot) {
     const row = document.createElement("div");
     row.className = "grade-row";
     row.dataset.id = opt.id;
-
-    const grades = GRADES.map(g =>
-      `<option value="${g.v}">${g.label} (${g.hint})</option>`).join("");
-
+    const grades = GRADES.map(g => `<option value="${g.v}">${g.label} (${g.hint})</option>`).join("");
     row.innerHTML =
       `<span class="grade-row__code"><b>${opt.code}</b><small>${opt.label}</small></span>` +
       `<select class="grade-row__sel"><option value="">— grade —</option>${grades}</select>` +
       `<label class="grade-row__gto"><input type="checkbox" class="gto-box"/> GTO&nbsp;✅</label>` +
       `<span class="grade-row__swatch"></span>`;
-
     const sel = row.querySelector(".grade-row__sel");
     sel.addEventListener("change", () => {
-      row.dataset.score = sel.value;
       row.querySelector(".grade-row__swatch").className =
         "grade-row__swatch" + (sel.value ? " score-" + sel.value : "");
     });
     rows.appendChild(row);
   });
-
   document.getElementById("feedbackInput").value = spot.feedback || "";
   document.getElementById("gradeError").hidden = true;
   document.getElementById("gradeEmpty").hidden = true;
@@ -116,9 +115,8 @@ function renderGradeForm(spot) {
 }
 
 function collectGrades(spot) {
-  const rows = [...document.querySelectorAll(".grade-row")];
   const missing = [];
-  rows.forEach(row => {
+  [...document.querySelectorAll(".grade-row")].forEach(row => {
     const opt = spot.options.find(o => o.id === row.dataset.id);
     const score = row.querySelector(".grade-row__sel").value;
     opt.score = score || null;
@@ -130,7 +128,104 @@ function collectGrades(spot) {
   return { missing, feedbackEmpty: !feedback };
 }
 
-/* ---- deck ---------------------------------------------------------------- */
+/* ---- GitHub publishing --------------------------------------------------- */
+
+/* UTF-8 safe base64 (the deck contains ♠♥♦♣ and may contain accents). */
+function b64Unicode(str) { return btoa(unescape(encodeURIComponent(str))); }
+function fromB64Unicode(b64) { return decodeURIComponent(escape(atob(b64.replace(/\n/g, "")))); }
+
+function ghHeaders() {
+  return {
+    "Authorization": "Bearer " + ghToken,
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+}
+function contentsUrl(withRef) {
+  const base = `https://api.github.com/repos/${REPO.owner}/${REPO.name}/contents/${REPO.path}`;
+  return withRef ? `${base}?ref=${REPO.branch}` : base;
+}
+
+async function ghGetContent() {
+  const res = await fetch(contentsUrl(true), { headers: ghHeaders(), cache: "no-store" });
+  if (res.status === 404) return { deck: [], sha: null };
+  if (!res.ok) throw new Error("GET " + res.status);
+  const j = await res.json();
+  const text = j.content ? fromB64Unicode(j.content) : "[]";
+  const parsed = JSON.parse(text || "[]");
+  return { deck: Array.isArray(parsed) ? parsed : [], sha: j.sha };
+}
+
+async function publish(message) {
+  if (!ghToken) { setStatus("local"); return false; }
+  setStatus("publishing");
+  try {
+    let sha = null;
+    try { sha = (await ghGetContent()).sha; } catch { /* may be 404/new */ }
+    const body = {
+      message,
+      content: b64Unicode(JSON.stringify(deck, null, 2)),
+      branch: REPO.branch
+    };
+    if (sha) body.sha = sha;
+    const res = await fetch(contentsUrl(false), {
+      method: "PUT", headers: ghHeaders(), body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error("PUT " + res.status + " " + t.slice(0, 140));
+    }
+    setStatus("published");
+    return true;
+  } catch (e) {
+    setStatus("error", e.message);
+    return false;
+  }
+}
+
+/* token connect / status */
+function setStatus(state, msg) {
+  const el = document.getElementById("ghStatus");
+  const map = {
+    disconnected: ["● Not connected", "off"],
+    connected:    ["● Connected — saves publish live", "ok"],
+    publishing:   ["● Publishing…", "busy"],
+    published:    ["✓ Published — live in ~1 min", "ok"],
+    local:        ["● Saved locally — connect to publish", "warn"],
+    error:        ["✕ " + (msg || "Publish error"), "err"]
+  };
+  const [text, cls] = map[state] || map.disconnected;
+  el.textContent = text;
+  el.className = "connect__status " + cls;
+}
+
+async function connect(token, silent) {
+  ghToken = token;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO.owner}/${REPO.name}`, { headers: ghHeaders() });
+    if (!res.ok) { ghToken = null; if (!silent) setStatus("error", "token rejected (" + res.status + ")"); return false; }
+    localStorage.setItem(TOKEN_KEY, token);
+    setStatus("connected");
+    document.getElementById("ghForget").hidden = false;
+    document.getElementById("ghToken").value = "";
+    document.getElementById("ghToken").placeholder = "Token saved in this browser ✓";
+    return true;
+  } catch (e) {
+    ghToken = null;
+    if (!silent) setStatus("error", e.message);
+    return false;
+  }
+}
+
+function forgetToken() {
+  ghToken = null;
+  localStorage.removeItem(TOKEN_KEY);
+  document.getElementById("ghForget").hidden = true;
+  document.getElementById("ghToken").placeholder = "Paste GitHub token (fine-grained · Contents: Read and write)";
+  setStatus("disconnected");
+}
+
+/* ---- deck UI ------------------------------------------------------------- */
 
 function refreshDeckUI() {
   document.getElementById("deckCount").textContent =
@@ -152,14 +247,15 @@ function refreshDeckUI() {
       `<span class="decklist__hand">BB ${handLabelHTML(s.hero.cards)} vs ${s.raiserPos}` +
         ` · ${s.board.map(cardLabelHTML).join(" ")}</span>` +
       `<span class="decklist__best">best: ${best}</span>` +
-      `<button class="decklist__del" data-id="${s.id}" title="Delete">✕</button>`;
+      `<button class="decklist__del" data-id="${s.id}" title="Delete & publish">✕</button>`;
     list.appendChild(li);
   });
   list.querySelectorAll(".decklist__del").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       deck = deck.filter(s => s.id !== btn.dataset.id);
       writeLocalDeck(deck);
       refreshDeckUI();
+      await publish("Remove hand from trainer deck");
     });
   });
 }
@@ -168,11 +264,8 @@ function downloadDeck() {
   const blob = new Blob([JSON.stringify(deck, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url;
-  a.download = "spots.json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  a.href = url; a.download = "spots.json";
+  document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
 }
 
@@ -181,26 +274,53 @@ function downloadDeck() {
 function newHand() {
   current = generateSpot(document.getElementById("raiserSel").value);
   renderPreview(current);
-  // hide any open grade form until "Use this hand"
   document.getElementById("grade").hidden = true;
   document.getElementById("gradeEmpty").hidden = false;
 }
 
 async function init() {
-  const local = readLocalDeck();
-  deck = local && local.length ? local : await fetchPublishedDeck();
+  // restore token + load freshest deck
+  const saved = localStorage.getItem(TOKEN_KEY);
+  if (saved) {
+    const ok = await connect(saved, true);
+    if (ok) {
+      try { deck = (await ghGetContent()).deck; }
+      catch { deck = readLocalDeck() || await fetchPublishedDeck(); }
+    } else {
+      setStatus("disconnected");
+      deck = readLocalDeck() || await fetchPublishedDeck();
+    }
+  } else {
+    setStatus("disconnected");
+    deck = readLocalDeck() || await fetchPublishedDeck();
+  }
   writeLocalDeck(deck);
   refreshDeckUI();
 
+  // connect controls
+  document.getElementById("ghConnect").addEventListener("click", async () => {
+    const t = document.getElementById("ghToken").value.trim();
+    if (!t) return;
+    if (await connect(t, false)) {
+      try { deck = (await ghGetContent()).deck; writeLocalDeck(deck); refreshDeckUI(); } catch {}
+    }
+  });
+  document.getElementById("ghForget").addEventListener("click", forgetToken);
+  document.getElementById("ghHelp").addEventListener("click", (e) => {
+    e.preventDefault();
+    document.getElementById("ghHelpBox").hidden = !document.getElementById("ghHelpBox").hidden;
+  });
+
+  // generate / preview
   document.getElementById("genBtn").addEventListener("click", newHand);
   document.getElementById("skipBtn").addEventListener("click", newHand);
-
   document.getElementById("useBtn").addEventListener("click", () => {
     if (current) renderGradeForm(current);
     document.getElementById("grade").scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 
-  document.getElementById("saveBtn").addEventListener("click", () => {
+  // save → publish
+  document.getElementById("saveBtn").addEventListener("click", async () => {
     if (!current) return;
     const { missing, feedbackEmpty } = collectGrades(current);
     const err = document.getElementById("gradeError");
@@ -215,20 +335,25 @@ async function init() {
     deck.push(current);
     writeLocalDeck(deck);
     refreshDeckUI();
+    const hero = handLabelHTML(current.hero.cards).replace(/<[^>]+>/g, "");
     current = null;
     document.getElementById("grade").hidden = true;
     document.getElementById("gradeEmpty").hidden = false;
     document.getElementById("preview").hidden = true;
-    newHand(); // ready the next one
+    await publish(`Add hand to trainer deck (${hero})`);
+    newHand();
   });
 
+  // deck actions
   document.getElementById("downloadBtn").addEventListener("click", downloadDeck);
-
+  document.getElementById("publishBtn").addEventListener("click", () => publish("Publish trainer deck"));
   document.getElementById("resetBtn").addEventListener("click", async () => {
-    if (!confirm("Reload the published deck (spots.json) and discard local drafts?")) return;
-    deck = await fetchPublishedDeck();
-    writeLocalDeck(deck);
-    refreshDeckUI();
+    if (!confirm("Reload the published deck and discard local drafts?")) return;
+    try {
+      deck = ghToken ? (await ghGetContent()).deck : await fetchPublishedDeck();
+      writeLocalDeck(deck);
+      refreshDeckUI();
+    } catch (e) { setStatus("error", e.message); }
   });
 }
 

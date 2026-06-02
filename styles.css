@@ -550,6 +550,32 @@ html, body {
 .grade__save { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
 .grade__error { color: var(--s-horrible); font-size: 12.5px; font-weight: 700; }
 
+/* connect-to-publish bar */
+.connectbar { margin-bottom: 20px; }
+.connect { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.connect__status {
+  font-size: 12.5px; font-weight: 700; white-space: nowrap;
+  padding: 5px 10px; border-radius: 999px;
+}
+.connect__status.off,
+.connect__status.warn  { color: #8a6d1a; background: #fdf6dd; }
+.connect__status.ok    { color: #0f6f2c; background: #e7f6ec; }
+.connect__status.busy  { color: #2b5fb0; background: #e7eefb; }
+.connect__status.err   { color: #a3201a; background: #fbe6e6; }
+.connect__input {
+  flex: 1 1 280px; min-width: 220px;
+  font: inherit; font-size: 13px;
+  border: 1.5px solid var(--line); border-radius: 9px; padding: 9px 11px;
+}
+.connect__help { font-size: 12.5px; font-weight: 700; color: var(--carrot-dark); text-decoration: none; }
+.connect__help:hover { text-decoration: underline; }
+.connect__helpbox {
+  margin-top: 12px; padding: 12px 16px;
+  background: var(--paper-2); border: 1px solid var(--line); border-radius: 10px;
+}
+.connect__helpbox ol { margin: 0; padding-left: 20px; }
+.connect__helpbox li { font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 4px; }
+
 .deckpanel { margin-top: 20px; }
 .deckpanel__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .deckpanel__actions { display: flex; gap: 10px; flex-wrap: wrap; }
