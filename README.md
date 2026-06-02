@@ -35,19 +35,18 @@ recreated in CSS).
 - `styles.css` — all styling, including the CSS-recreated Carrot Corner table.
 - `spots.json` — the published deck (committed). The trainer reads this.
 
-## How hands are added (admin → live)
+## How hands are added (admin → trainer)
 
 The admin generates a hand for the **Turn Probe** scenario (Hero BB, one raiser opens,
 Hero calls heads-up, flop checks through, turn probe), the coach grades the four options
-(Check / B33 / B75 / B150) and writes feedback, then **Save & publish**.
+(Check / B33 / B75 / B150) and writes feedback, then **Save hand**.
 
-Publishing commits `spots.json` to this repo via the GitHub API, so saved hands go live
-for everyone in ~1 minute. To enable it, paste a **fine-grained personal access token**
-into the admin's *Connect* bar (Repository → this repo, **Contents: Read and write**).
-The token is stored only in your browser (`localStorage`) and is never committed.
+Saved hands persist in the browser (`localStorage`) and show on the trainer instantly —
+**no login or token needed** (testing-phase model: assumes the admin is the only author).
 
-Hands also persist locally (`localStorage`), so they appear on your own trainer instantly
-even before publishing.
+To publish hands to the public URL for everyone, click **Download backup** in the admin
+and commit the resulting `spots.json` (the trainer reads this file for visitors who have
+no local deck).
 
 ## Run locally
 

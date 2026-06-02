@@ -87,11 +87,6 @@ function renderTable(spot, table) {
   spot.board.forEach(c => board.appendChild(cardEl(c)));
   table.appendChild(board);
 
-  const chips = document.createElement("div");
-  chips.className = "potchips";
-  chips.textContent = `${spot.potBB} BB`;
-  table.appendChild(chips);
-
   buildSeats(spot).forEach(seat => {
     const el = document.createElement("div");
     el.className = `seat ${seat.slot} ${seat.state}`.trim();
@@ -111,12 +106,12 @@ function renderTable(spot, table) {
     table.appendChild(el);
   });
 
-  // dealer button (near the BTN seat / top-right)
+  // dealer button (just inside the felt, toward the BTN seat / top-right)
   const d = document.createElement("div");
   d.className = "dealer";
   d.textContent = "D";
-  d.style.left = "72%";
-  d.style.top = "38%";
+  d.style.left = "69%";
+  d.style.top = "34%";
   table.appendChild(d);
 }
 

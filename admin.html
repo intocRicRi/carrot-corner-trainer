@@ -32,26 +32,6 @@
       </div>
     </header>
 
-    <!-- Connect to publish -->
-    <section class="panel connectbar">
-      <div class="connect">
-        <span class="connect__status off" id="ghStatus">● Not connected</span>
-        <input type="password" id="ghToken" class="connect__input"
-               placeholder="Paste GitHub token (fine-grained · Contents: Read and write)" autocomplete="off" />
-        <button class="btn-primary" id="ghConnect">Connect</button>
-        <button class="btn-ghost" id="ghForget" hidden>Forget</button>
-        <a class="connect__help" href="#" id="ghHelp">How do I get a token?</a>
-      </div>
-      <div class="connect__helpbox" id="ghHelpBox" hidden>
-        <ol>
-          <li>GitHub → <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b>.</li>
-          <li><b>Resource owner:</b> intocRicRi. &nbsp;<b>Repository access:</b> Only select repositories → <b>carrot-corner-trainer</b>.</li>
-          <li><b>Permissions → Repository permissions → Contents → Read and write</b>.</li>
-          <li>Generate, copy the token, paste it above, click <b>Connect</b>. It is stored only in this browser — never in the code.</li>
-        </ol>
-      </div>
-    </section>
-
     <div class="admin">
       <!-- LEFT: scenario + generate + preview -->
       <section class="panel">
@@ -111,7 +91,7 @@
 
           <div class="grade__save">
             <span class="grade__error" id="gradeError" hidden></span>
-            <button class="btn-primary" id="saveBtn">Save &amp; publish</button>
+            <button class="btn-primary" id="saveBtn">Save hand</button>
           </div>
         </div>
       </section>
@@ -122,15 +102,14 @@
       <div class="deckpanel__head">
         <h2 class="panel__title">Deck · <span id="deckCount2">0</span> hand(s)</h2>
         <div class="deckpanel__actions">
-          <button class="btn-ghost" id="resetBtn" title="Reload the published deck, discarding local drafts">Reset from published</button>
-          <button class="btn-ghost" id="downloadBtn" title="Download a backup copy">⬇ Download backup</button>
-          <button class="btn-primary" id="publishBtn">Publish now</button>
+          <button class="btn-ghost" id="resetBtn" title="Reload the published deck, discarding local changes">Reset from published</button>
+          <button class="btn-primary" id="downloadBtn" title="Download a backup copy of the deck">⬇ Download backup</button>
         </div>
       </div>
       <p class="deckpanel__note">
-        When connected, <b>Save &amp; publish</b> (and deleting) commits to the repo and the hand goes
-        live for everyone in about a minute. Not connected? Hands are still saved in this browser and
-        show on your own trainer — connect above to publish them.
+        Saved hands are kept in this browser and show on your trainer instantly — no login needed for
+        testing. To put hands on the public URL for everyone, click <b>Download backup</b> and ask
+        Claude to publish them.
       </p>
       <ul class="decklist" id="deckList"></ul>
     </section>

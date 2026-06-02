@@ -12,6 +12,22 @@ async function loadDeck() {
   return await fetchPublishedDeck();          // committed spots.json
 }
 
+/* Compact hand-history shorthand (falls back to old prose if needed). */
+function renderAction(spot) {
+  const el = document.getElementById("action");
+  if (Array.isArray(spot.streets)) {
+    el.innerHTML = spot.streets.map(s =>
+      `<div class="street${s.active ? " active" : ""}">` +
+        `<span class="street__label">${s.label}</span>` +
+        `<span class="street__val">${s.value}</span>` +
+      `</div>`).join("");
+  } else if (Array.isArray(spot.description)) {
+    el.innerHTML = spot.description.map(line => `<p>${line}</p>`).join("");
+  } else {
+    el.innerHTML = "";
+  }
+}
+
 function renderSpot(spot) {
   // table
   renderTable(spot, document.getElementById("table"));
@@ -26,8 +42,7 @@ function renderSpot(spot) {
   document.getElementById("feedbackText").textContent = spot.feedback;
   document.getElementById("progress").textContent = `Spot ${index + 1} / ${DECK.length}`;
 
-  document.getElementById("description").innerHTML =
-    spot.description.map(line => `<p>${line}</p>`).join("");
+  renderAction(spot);
 
   // options
   const wrap = document.getElementById("options");
