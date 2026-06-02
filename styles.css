@@ -521,6 +521,101 @@ html, body {
 .nt .nt__hero-cards .card { box-shadow: 0 5px 14px rgba(0,0,0,.4); }
 
 /* ============================================================================
+ * TRAINER — Midnight Glass layout (scoped to body.midnight; admin stays light)
+ * ==========================================================================*/
+body.midnight {
+  background: radial-gradient(125% 125% at 27% 10%, #1f2f40 0%, #0e1117 66%);
+  color: #eaf2f8;
+}
+.tapp {
+  max-width: 1200px; margin: 0 auto; height: 100vh;
+  display: flex; flex-direction: column; padding: 16px 20px 20px; box-sizing: border-box;
+}
+
+/* banner */
+.tbanner {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px; padding: 9px 14px;
+  -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
+}
+.tbanner__brand { display: flex; align-items: center; gap: 10px; }
+.tbanner__logo { display: grid; place-items: center; width: 34px; height: 34px; background: #11161d; border-radius: 9px; }
+.tbanner__theme { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 800; font-size: 16px; color: #eaf2f8; background: none; border: none; cursor: pointer; }
+.tbanner__chev { color: #5fe0b0; font-size: 12px; }
+.tbanner__nav { display: flex; align-items: center; gap: 8px; }
+.tbanner__admin { font-size: 12.5px; font-weight: 700; color: #9fb3c4; text-decoration: none; border: 1px solid rgba(255,255,255,.14); border-radius: 8px; padding: 5px 10px; margin-right: 2px; }
+.tbanner__admin:hover { color: #eaf2f8; border-color: #5fe0b0; }
+.tnavbtn { width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); color: #cfe0ec; cursor: pointer; font-size: 13px; }
+.tnavbtn:hover { border-color: #5fe0b0; color: #eaf2f8; }
+.tcount { font-size: 13px; font-weight: 700; color: #cdd9e3; min-width: 92px; text-align: center; }
+.tshuffle { font: inherit; font-size: 12.5px; font-weight: 700; color: #eaf2f8; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.16); border-radius: 8px; padding: 6px 11px; cursor: pointer; }
+.tshuffle:hover { border-color: #5fe0b0; }
+
+/* main / grid */
+.tmain { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 14px 0; }
+.tgrid { width: 100%; display: grid; grid-template-columns: 1.18fr 1fr; gap: 16px; align-items: stretch; }
+.tgrid .table { align-self: start; width: 100%; }
+.tside { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+
+/* per-street recap */
+.trecap { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.10); border-radius: 12px; padding: 10px 14px; }
+.street { display: grid; grid-template-columns: 62px 1fr; align-items: baseline; gap: 12px; padding: 3px 0; }
+.street__name { font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #7d93a6; }
+.street__act { font-size: 13.5px; color: #cdd9e3; }
+.street--live .street__name { color: #5fe0b0; }
+.street--live .street__act { font-weight: 700; color: #5fe0b0; }
+
+/* answers — outline + glow, no A/B/C/D */
+.tanswers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+.ans { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 13px 8px; border: 2px solid rgba(255,255,255,.16); border-radius: 12px;
+  background: #121b26; cursor: pointer; font: inherit; min-width: 0; }
+.ans:hover:not(:disabled) { border-color: #5fe0b0; }
+.ans__code { font-weight: 800; font-size: 16px; color: #eef5fb; white-space: nowrap; }
+.ans__sub { font-size: 11px; color: #92a6b6; white-space: nowrap; }
+.ans__gto { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: #0f7a31; color: #fff;
+  font-size: 9.5px; font-weight: 800; padding: 1px 7px; border-radius: 999px; opacity: 0; white-space: nowrap; }
+.ans__gto.show { opacity: 1; }
+.ans__pick { position: absolute; top: 5px; right: 5px; width: 16px; height: 16px; border-radius: 50%;
+  background: #eef5fb; color: #0f1620; font-size: 9px; font-weight: 800; display: grid; place-items: center; opacity: 0; }
+.ans.picked .ans__pick { opacity: 1; }
+.ans.picked { outline: 2px solid rgba(255,255,255,.72); outline-offset: 2px; }
+.tanswers.answered .ans { cursor: default; }
+.ans.score-best     { border-color: #34d27f; box-shadow: 0 0 0 1px #34d27f, 0 0 16px rgba(52,210,127,.40); }
+.ans.score-good     { border-color: #5cd594; box-shadow: 0 0 0 1px #5cd594, 0 0 14px rgba(92,213,148,.32); }
+.ans.score-okay     { border-color: #ecc23a; box-shadow: 0 0 0 1px #ecc23a, 0 0 14px rgba(236,194,58,.30); }
+.ans.score-mistake  { border-color: #ef8a3c; box-shadow: 0 0 0 1px #ef8a3c, 0 0 14px rgba(239,138,60,.30); }
+.ans.score-horrible { border-color: #e85d5d; box-shadow: 0 0 0 1px #e85d5d, 0 0 14px rgba(232,93,93,.30); }
+.ans.score-best .ans__code     { color: #7ff0b4; }
+.ans.score-good .ans__code     { color: #a9eecb; }
+.ans.score-okay .ans__code     { color: #ffe49f; }
+.ans.score-mistake .ans__code  { color: #ffc999; }
+.ans.score-horrible .ans__code { color: #ffb0b0; }
+
+/* legend */
+.tlegend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 11.5px; color: #9fb3c4; }
+.legtitle { font-weight: 800; color: #eaf2f8; }
+.leg { display: inline-flex; align-items: center; gap: 5px; }
+
+/* coach */
+.tcoach { flex: 1 1 auto; min-height: 0; overflow: hidden;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.11); border-radius: 12px;
+  padding: 13px 16px; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.tcoach--idle { display: flex; align-items: center; justify-content: center; }
+.tcoach__hint { color: #7d93a6; font-size: 13px; }
+.tcoach__head { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.tcoach__name { font-weight: 800; font-size: 14.5px; color: #eaf2f8; }
+.tcoach__role { font-size: 11px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: #5fe0b0; }
+.tcoach__text { margin: 0; font-size: 13.5px; line-height: 1.55; color: #c9d8e4; }
+.tcoach__actions { display: flex; gap: 10px; margin-top: 12px; }
+
+/* empty state (dark) */
+.tempty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #cdd9e3; text-align: center; }
+.tempty a { color: #5fe0b0; font-weight: 700; }
+
+/* ============================================================================
  * Additions: header-right, suits key, navigation, empty state, admin
  * ==========================================================================*/
 

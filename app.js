@@ -1,89 +1,92 @@
 /* ============================================================================
- * Carrot Corner Trainer — trainer logic
- * Loads the deck, shows a count, plays spots one at a time with colour reveal.
+ * Carrot Corner Trainer — trainer logic (Midnight Glass layout).
+ * Banner (theme + hand nav) · table · per-street recap · answer row (no keys,
+ * outline+glow on reveal) · labelled legend · coach feedback. No scrolling.
  * ==========================================================================*/
 
 let DECK = [];
 let index = 0;
 
+const GRADE_LABELS = [
+  ["best", "Best"], ["good", "Good"], ["okay", "OK"], ["mistake", "Mistake"], ["horrible", "Blunder"]
+];
+
 async function loadDeck() {
   const local = readLocalDeck();
-  if (local && local.length) return local;   // drafts on this browser
-  return await fetchPublishedDeck();          // committed spots.json
+  if (local && local.length) return local;
+  return await fetchPublishedDeck();
 }
 
-/* Compact hand-history shorthand (falls back to old prose if needed). */
-function renderAction(spot) {
-  const el = document.getElementById("action");
-  if (Array.isArray(spot.streets)) {
-    el.innerHTML = spot.streets.map(s =>
-      `<div class="street${s.active ? " active" : ""}">` +
-        `<span class="street__label">${s.label}</span>` +
-        `<span class="street__val">${s.value}</span>` +
-      `</div>`).join("");
-  } else if (Array.isArray(spot.description)) {
-    el.innerHTML = spot.description.map(line => `<p>${line}</p>`).join("");
-  } else {
-    el.innerHTML = "";
+function renderRecap(spot) {
+  document.getElementById("recap").innerHTML = (spot.recap || []).map(s =>
+    `<div class="street${s.live ? " street--live" : ""}">` +
+      `<span class="street__name">${s.street}</span>` +
+      `<span class="street__act">${s.action}</span></div>`).join("");
+}
+
+function renderAnswers(spot) {
+  const el = document.getElementById("answers");
+  el.classList.remove("answered");
+  el.innerHTML = spot.options.map(o =>
+    `<button class="ans" data-id="${o.id}">` +
+      `<span class="ans__gto">GTO&nbsp;✅</span>` +
+      `<span class="ans__code">${o.code}</span>` +
+      (o.sub ? `<span class="ans__sub">${o.sub}</span>` : "") +
+      `<span class="ans__pick">✓</span>` +
+    `</button>`).join("");
+  el.querySelectorAll(".ans").forEach(b =>
+    b.addEventListener("click", () => reveal(spot, b.dataset.id)));
+}
+
+function renderLegend() {
+  document.getElementById("legend").innerHTML =
+    `<span class="legtitle">Answer quality</span>` +
+    GRADE_LABELS.map(([k, l]) => `<span class="leg"><i class="dot s-${k}"></i>${l}</span>`).join("") +
+    `<span class="leg"><i class="gto-chip">GTO&nbsp;✅</i>solver-approved</span>`;
+}
+
+function renderCoach(spot, revealed) {
+  const el = document.getElementById("coach");
+  if (!revealed) {
+    el.className = "tcoach tcoach--idle";
+    el.innerHTML = `<span class="tcoach__hint">Pick your play to see ${spot.author || "the coach"}’s feedback.</span>`;
+    return;
   }
-}
-
-function renderSpot(spot) {
-  // table
-  renderTable(spot, document.getElementById("table"));
-
-  // quiz text
-  document.getElementById("title").textContent = spot.title;
-  document.getElementById("stakes").textContent = `${spot.stakes} · ${spot.effective}`;
-  document.getElementById("question").innerHTML = spot.question;
-  document.getElementById("author").textContent = spot.author || "Coach";
-  document.getElementById("feedbackText").textContent = spot.feedback;
-  document.getElementById("progress").textContent = `Spot ${index + 1} / ${DECK.length}`;
-
-  renderAction(spot);
-
-  // options
-  const wrap = document.getElementById("options");
-  wrap.className = "options";
-  wrap.innerHTML = "";
-  spot.options.forEach(opt => {
-    const b = document.createElement("button");
-    b.className = "option";
-    b.dataset.id = opt.id;
-    b.innerHTML =
-      `<span class="option__gto">GTO&nbsp;✅</span>` +
-      `<span class="option__key">${opt.id}</span>` +
-      `<span class="option__body">` +
-        `<span class="option__code">${opt.code}</span>` +
-        `<span class="option__label">${opt.label}</span>` +
-        (opt.sub ? `<span class="option__sub">${opt.sub}</span>` : "") +
-      `</span>` +
-      `<span class="option__pick">YOUR PICK</span>`;
-    b.addEventListener("click", () => reveal(spot, opt.id));
-    wrap.appendChild(b);
-  });
-
-  // reset reveal state
-  document.getElementById("legend").hidden = true;
-  document.getElementById("feedback").hidden = true;
+  el.className = "tcoach";
+  el.innerHTML =
+    `<div class="tcoach__head"><span class="feedback__avatar">PC</span>` +
+      `<span class="tcoach__name">${spot.author || "Coach"}</span>` +
+      `<span class="tcoach__role">Coach feedback</span></div>` +
+    `<p class="tcoach__text">${spot.feedback}</p>` +
+    `<div class="tcoach__actions">` +
+      `<button class="btn-ghost" id="retry">Try again</button>` +
+      `<button class="btn-primary" id="next">Next hand →</button></div>`;
+  document.getElementById("retry").addEventListener("click", () => show(index));
+  document.getElementById("next").addEventListener("click", () => show(index + 1));
 }
 
 function reveal(spot, pickedId) {
-  const wrap = document.getElementById("options");
+  const wrap = document.getElementById("answers");
   if (wrap.classList.contains("answered")) return;
   wrap.classList.add("answered");
-
-  spot.options.forEach(opt => {
-    const b = wrap.querySelector(`[data-id="${opt.id}"]`);
+  spot.options.forEach(o => {
+    const b = wrap.querySelector(`.ans[data-id="${o.id}"]`);
     b.disabled = true;
-    if (opt.score) b.classList.add(`score-${opt.score}`);
-    if (opt.id === pickedId) b.classList.add("picked");
-    if (opt.gto) b.querySelector(".option__gto").classList.add("show");
+    if (o.score) b.classList.add("score-" + o.score);
+    if (o.id === pickedId) b.classList.add("picked");
+    if (o.gto) b.querySelector(".ans__gto").classList.add("show");
   });
+  renderCoach(spot, true);
+}
 
-  document.getElementById("legend").hidden = false;
-  document.getElementById("feedback").hidden = false;
-  document.getElementById("feedback").scrollIntoView({ behavior: "smooth", block: "nearest" });
+function renderSpot(spot) {
+  renderTable(spot, document.getElementById("table"));
+  document.getElementById("themeName").textContent = spot.title || "Spot";
+  document.getElementById("handCount").textContent = `Hand ${index + 1} / ${DECK.length}`;
+  renderRecap(spot);
+  renderAnswers(spot);
+  renderLegend();
+  renderCoach(spot, false);
 }
 
 function show(i) {
@@ -91,27 +94,27 @@ function show(i) {
   renderSpot(DECK[index]);
 }
 
-function updateCount() {
-  document.getElementById("deckCount").textContent =
-    `${DECK.length} hand${DECK.length === 1 ? "" : "s"}`;
-}
-
 async function init() {
   DECK = await loadDeck();
-  updateCount();
 
   const empty = document.getElementById("empty");
   const layout = document.getElementById("layout");
   if (!DECK.length) {
     empty.hidden = false;
     layout.hidden = true;
+    document.getElementById("handCount").textContent = "0 hands";
     return;
   }
   empty.hidden = true;
   layout.hidden = false;
 
-  document.getElementById("retry").addEventListener("click", () => show(index));
-  document.getElementById("next").addEventListener("click", () => show(index + 1));
+  document.getElementById("prevBtn").addEventListener("click", () => show(index - 1));
+  document.getElementById("nextBtn").addEventListener("click", () => show(index + 1));
+  document.getElementById("randomBtn").addEventListener("click", () => {
+    if (DECK.length < 2) return show(index);
+    let r; do { r = Math.floor(Math.random() * DECK.length); } while (r === index);
+    show(r);
+  });
 
   show(0);
 }

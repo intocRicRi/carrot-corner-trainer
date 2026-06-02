@@ -59,11 +59,10 @@ function generateSpot(forcedRaiser) {
     hero: { pos: "BB", cards: heroCards },
     raiserPos: raiser,
     board,
-    streets: [
-      { label: "Hero · BB", value: heroLbl },
-      { label: "Preflop", value: `${raiser} opens ${openBB} BB · Hero calls` },
-      { label: `Flop ${flopLbl}`, value: "check / check" },
-      { label: `Turn ${turnLbl}`, value: "Hero to act", active: true }
+    recap: [
+      { street: "Preflop", action: `${raiser} opens ${openBB} BB · Hero calls` },
+      { street: "Flop", action: "checks through" },
+      { street: "Turn", action: "Hero to act", live: true }
     ],
     question: "What is your play?",
     options: makeOptions(potBB),

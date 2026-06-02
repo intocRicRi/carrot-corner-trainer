@@ -9,77 +9,50 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <div class="app">
-    <header class="brand">
-      <div class="brand__logo" aria-hidden="true">
-        <svg viewBox="0 0 64 64" width="34" height="34">
-          <g transform="rotate(8 32 32)">
-            <path d="M22 26 L42 26 L33 60 Q32 63 31 60 Z" fill="#F47C20"/>
-            <path d="M22 26 L42 26 L39 36 L25 36 Z" fill="#E2680F"/>
-            <path d="M32 26 C30 16 22 14 18 16 C24 18 26 22 26 26 Z" fill="#3FA34D"/>
-            <path d="M32 26 C34 14 42 12 47 15 C40 16 37 21 36 26 Z" fill="#4CAF50"/>
-          </g>
-        </svg>
+<body class="midnight">
+  <div class="tapp">
+    <header class="tbanner">
+      <div class="tbanner__brand">
+        <span class="tbanner__logo" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="26" height="26">
+            <g transform="rotate(8 32 32)">
+              <path d="M22 26 L42 26 L33 60 Q32 63 31 60 Z" fill="#F47C20"/>
+              <path d="M22 26 L42 26 L39 36 L25 36 Z" fill="#E2680F"/>
+              <path d="M32 26 C30 16 22 14 18 16 C24 18 26 22 26 26 Z" fill="#3FA34D"/>
+              <path d="M32 26 C34 14 42 12 47 15 C40 16 37 21 36 26 Z" fill="#4CAF50"/>
+            </g>
+          </svg>
+        </span>
+        <button class="tbanner__theme" id="themeBtn">
+          <span id="themeName">Turn Probe Opportunity</span>
+          <span class="tbanner__chev">▾</span>
+        </button>
+        <div class="tbanner__menu" id="themeMenu" hidden></div>
       </div>
-      <div class="brand__text">
-        <span class="brand__name">CARROT CORNER</span>
-        <span class="brand__tag">NLHE 6-max Cash · Trainer</span>
-      </div>
-      <div class="brand__right">
-        <span class="deck-count" id="deckCount" title="Hands in this deck">0 hands</span>
-        <a class="admin-link" href="admin.html">Admin →</a>
+      <div class="tbanner__nav">
+        <a class="tbanner__admin" href="admin.html">Admin</a>
+        <button class="tnavbtn" id="prevBtn" aria-label="Previous hand">◀</button>
+        <span class="tcount" id="handCount">—</span>
+        <button class="tnavbtn" id="nextBtn" aria-label="Next hand">▶</button>
+        <button class="tshuffle" id="randomBtn">⤳ Random</button>
       </div>
     </header>
 
-    <!-- Empty-deck state -->
-    <div class="empty" id="empty" hidden>
+    <div class="tempty" id="empty" hidden>
       <h2>No hands yet</h2>
-      <p>Head to the <a href="admin.html">Admin page</a> to generate and grade your first spot.</p>
+      <p>Head to the <a href="admin.html">Admin page</a> to add the first spot.</p>
     </div>
 
-    <main class="layout" id="layout">
-      <!-- The visual "spot" -->
-      <section class="spot" aria-label="Poker spot">
+    <main class="tmain" id="layout">
+      <div class="tgrid">
         <div class="table" id="table"></div>
-      </section>
-
-      <!-- The quiz -->
-      <section class="quiz">
-        <div class="quiz__head">
-          <h1 class="quiz__title" id="title"></h1>
-          <span class="quiz__progress" id="progress"></span>
+        <div class="tside">
+          <div class="trecap" id="recap"></div>
+          <div class="tanswers" id="answers"></div>
+          <div class="tlegend" id="legend"></div>
+          <div class="tcoach" id="coach"></div>
         </div>
-        <p class="quiz__stakes" id="stakes"></p>
-
-        <div class="streets" id="action"></div>
-
-        <p class="question" id="question"></p>
-
-        <div class="options" id="options"></div>
-
-        <div class="legend" id="legend" hidden>
-          <span class="legend__item"><i class="dot s-best"></i>Best</span>
-          <span class="legend__item"><i class="dot s-good"></i>Good</span>
-          <span class="legend__item"><i class="dot s-okay"></i>OK</span>
-          <span class="legend__item"><i class="dot s-mistake"></i>Mistake</span>
-          <span class="legend__item"><i class="dot s-horrible"></i>Blunder</span>
-          <span class="legend__item"><i class="gto-chip">GTO&nbsp;✅</i>In theory</span>
-        </div>
-
-        <div class="feedback" id="feedback" hidden>
-          <div class="feedback__author">
-            <span class="feedback__avatar">PC</span>
-            <span class="feedback__name" id="author"></span>
-            <span class="feedback__role">Coach feedback</span>
-          </div>
-          <p class="feedback__text" id="feedbackText"></p>
-          <div class="feedback__actions">
-            <button class="btn-ghost" id="retry">Try again</button>
-            <button class="btn-primary" id="next">Next hand →</button>
-          </div>
-        </div>
-      </section>
+      </div>
     </main>
   </div>
 
