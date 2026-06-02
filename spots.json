@@ -11,10 +11,10 @@
     "raiserPos": "CO",
     "board": ["8h", "Kd", "7h", "3s"],
     "streets": [
-      { "label": "Hero · BB", "value": "K<span class=\"suit-s\">♠</span> J<span class=\"suit-s\">♠</span>" },
+      { "label": "Hero · BB", "value": "<span class=\"suit-s\">♠K</span> <span class=\"suit-s\">♠J</span>" },
       { "label": "Preflop", "value": "CO opens 2.5 BB · Hero calls" },
-      { "label": "Flop 8<span class=\"suit-h\">♥</span> K<span class=\"suit-d\">♦</span> 7<span class=\"suit-h\">♥</span>", "value": "check / check" },
-      { "label": "Turn 3<span class=\"suit-s\">♠</span>", "value": "Hero to act", "active": true }
+      { "label": "Flop <span class=\"suit-h\">♥8</span> <span class=\"suit-d\">♦K</span> <span class=\"suit-h\">♥7</span>", "value": "check / check" },
+      { "label": "Turn <span class=\"suit-s\">♠3</span>", "value": "Hero to act", "active": true }
     ],
     "question": "What is your play?",
     "options": [

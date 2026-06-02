@@ -21,10 +21,10 @@ function rankOf(card) { const r = card.slice(0, -1); return RANK_DISPLAY[r] || r
 function suitKey(card) { return card.slice(-1); }
 function suitSym(card) { return SUITS[suitKey(card)].sym; }
 
-/** A rank + a colour-coded suit glyph, e.g. K<span class="suit-s">♠</span> */
+/** A colour-coded suit glyph then the rank, e.g. <span class="suit-s">♠K</span> */
 function cardLabelHTML(card) {
   const k = suitKey(card);
-  return `${rankOf(card)}<span class="suit-${k}">${SUITS[k].sym}</span>`;
+  return `<span class="suit-${k}">${SUITS[k].sym}${rankOf(card)}</span>`;
 }
 function handLabelHTML(cards) { return cards.map(cardLabelHTML).join(" "); }
 
@@ -36,8 +36,8 @@ function cardEl(card) {
   const el = document.createElement("div");
   el.className = `card suit-${k}`;
   el.innerHTML =
-    `<span class="r">${rankOf(card)}</span>` +
     `<span class="s">${SUITS[k].sym}</span>` +
+    `<span class="r">${rankOf(card)}</span>` +
     `<span class="pip">${SUITS[k].sym}</span>`;
   return el;
 }
