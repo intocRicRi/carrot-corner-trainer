@@ -36,8 +36,8 @@ function cardEl(card) {
   const el = document.createElement("div");
   el.className = `card suit-${k}`;
   el.innerHTML =
-    `<span class="s">${SUITS[k].sym}</span>` +
     `<span class="r">${rankOf(card)}</span>` +
+    `<span class="s">${SUITS[k].sym}</span>` +
     `<span class="pip">${SUITS[k].sym}</span>`;
   return el;
 }
