@@ -448,14 +448,6 @@ html, body {
 }
 .admin-link:hover { background: var(--paper-2); }
 
-/* four-colour deck key */
-.suitkey {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px;
-  margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--ink-soft);
-}
-.suitkey span { display: inline-flex; align-items: center; gap: 4px; }
-.suitkey i { font-style: normal; font-size: 15px; font-weight: 800; }
-
 /* progress chip + stakes line */
 .quiz__progress {
   font-size: 12px; font-weight: 700; color: var(--ink-soft);
